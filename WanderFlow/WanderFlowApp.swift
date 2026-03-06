@@ -13,6 +13,9 @@ struct WanderFlowApp: App {
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             Item.self,
+            Trip.self,
+            Expense.self,
+            ItineraryItem.self
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 
