@@ -27,7 +27,13 @@ struct CityPickerView: View {
                     ForEach(results, id: \.self) { item in
                         Button {
                             // 优先使用 item.location.coordinate
-                            let coord = item.location.coordinate
+                            let coord: CLLocationCoordinate2D
+                            if #available(iOS 26.0, *) {
+                                coord = item.location.coordinate
+                            } else {
+                                coord = item.placemark.coordinate
+                            }
+                            
                             // 使用 item.name 作为城市名
                             let name = item.name ?? "未知城市"
                             onSelect(name, coord)

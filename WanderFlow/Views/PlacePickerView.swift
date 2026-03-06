@@ -37,7 +37,12 @@ struct PlacePickerView: View {
                     ForEach(results, id: \.self) { item in
                         Button {
                             // 编译器提示 item.location 为非可选类型，直接获取坐标
-                            let coord = item.location.coordinate
+                            let coord: CLLocationCoordinate2D
+                            if #available(iOS 26.0, *) {
+                                coord = item.location.coordinate
+                            } else {
+                                coord = item.placemark.coordinate
+                            }
                             onSelect(item.name ?? "地点", coord)
                             dismiss()
                         } label: {
@@ -45,10 +50,17 @@ struct PlacePickerView: View {
                                 Text(item.name ?? "地点")
                                 HStack(spacing: 6) {
                                     if let user = locationManager.coordinate {
-                                        let loc = item.location
-                                        let dist = CLLocation(latitude: user.latitude, longitude: user.longitude)
-                                            .distance(from: loc)
-                                        Text(formatDistance(dist))
+                                        if #available(iOS 26.0, *) {
+                                            let dist = CLLocation(latitude: user.latitude, longitude: user.longitude)
+                                                .distance(from: item.location)
+                                            Text(formatDistance(dist))
+                                        } else {
+                                            if let loc = item.placemark.location {
+                                                let dist = CLLocation(latitude: user.latitude, longitude: user.longitude)
+                                                    .distance(from: loc)
+                                                Text(formatDistance(dist))
+                                            }
+                                        }
                                     }
                                 }
                                 .foregroundColor(.secondary)
