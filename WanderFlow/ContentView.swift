@@ -192,11 +192,20 @@ struct ProfileView: View {
 struct TripDetailView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
+    
+    var trip: Trip
+    
+    @State private var selection: DetailTab = .itinerary
     @State private var isShowingTripEditor: Bool = false
     @State private var isShowingAddItinerary: Bool = false
     @State private var isShowingAddExpense: Bool = false
     @State private var isConfirmingDelete: Bool = false
-    var trip: Trip
+    @State private var editingItem: ItineraryItem?
+    
+    enum DetailTab: String, CaseIterable {
+        case itinerary = "行程"
+        case expenses = "支出"
+    }
     
     private var groupedItinerary: [(Date, [ItineraryItem])] {
         let sorted = trip.itinerary.sorted { $0.date < $1.date }
@@ -207,48 +216,132 @@ struct TripDetailView: View {
     }
     
     var body: some View {
-        List {
-            Section {
-                TripHeaderCard(trip: trip)
-                    .listRowInsets(EdgeInsets())
-                    .listRowBackground(Color.clear)
+        VStack(spacing: 0) {
+            Picker("视图切换", selection: $selection) {
+                ForEach(DetailTab.allCases, id: \.self) { tab in
+                    Text(tab.rawValue).tag(tab)
+                }
+            }
+            .pickerStyle(.segmented)
+            .padding()
+            .background(Color(UIColor.systemGroupedBackground))
+            
+            if selection == .itinerary {
+                ItineraryListView
+            } else {
+                ExpenseListView(trip: trip)
+            }
+        }
+        .navigationTitle(trip.title)
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Menu {
+                    Button("编辑旅行") { isShowingTripEditor = true }
+                    Button("删除旅行", role: .destructive) { isConfirmingDelete = true }
+                } label: {
+                    Image(systemName: "ellipsis.circle")
+                }
             }
             
+            ToolbarItem(placement: .bottomBar) {
+                HStack {
+                    Spacer()
+                    if selection == .itinerary {
+                        Button {
+                            editingItem = nil
+                            isShowingAddItinerary = true
+                        } label: {
+                            HStack {
+                                Image(systemName: "plus.circle.fill")
+                                Text("添加行程")
+                            }
+                            .font(.headline)
+                        }
+                    } else {
+                        Button {
+                            isShowingAddExpense = true
+                        } label: {
+                            HStack {
+                                Image(systemName: "creditcard.fill")
+                                Text("记一笔")
+                            }
+                            .font(.headline)
+                        }
+                    }
+                    Spacer()
+                }
+            }
+        }
+        .confirmationDialog("删除这趟旅行？", isPresented: $isConfirmingDelete, titleVisibility: .visible) {
+            Button("删除旅行", role: .destructive) {
+                modelContext.delete(trip)
+                try? modelContext.save()
+                dismiss()
+            }
+            Button("取消", role: .cancel) {}
+        }
+        .sheet(isPresented: $isShowingTripEditor) {
+            TripEditorSheet(trip: trip)
+        }
+        .sheet(isPresented: $isShowingAddItinerary) {
+            AddItineraryItemSheet(trip: trip, itemToEdit: editingItem)
+                .presentationDetents([.medium, .large])
+        }
+        .sheet(isPresented: $isShowingAddExpense) {
+            AddExpenseSheet(trip: trip)
+                .presentationDetents([.medium])
+        }
+        // 当 editingItem 变化时自动触发 Sheet
+        .onChange(of: editingItem) { _, newItem in
+            if newItem != nil {
+                isShowingAddItinerary = true
+            }
+        }
+    }
+    
+    private var ItineraryListView: some View {
+        List {
             ForEach(groupedItinerary, id: \.0) { date, items in
                 Section(header: Text(date, format: .dateTime.weekday().month().day())) {
                     ForEach(items) { item in
-                        HStack(alignment: .top, spacing: 12) {
-                            Text(item.date, format: .dateTime.hour().minute())
-                                .font(.subheadline)
-                                .monospacedDigit()
-                                .foregroundColor(.secondary)
-                                .frame(width: 48, alignment: .trailing)
-                            
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text(item.title)
-                                    .font(.headline)
-                                
-                                if let city = item.cityName {
-                                    Text(city)
-                                        .font(.caption)
-                                        .padding(.horizontal, 6)
-                                        .padding(.vertical, 2)
-                                        .background(Color.blue.opacity(0.1))
-                                        .foregroundColor(.blue)
-                                        .cornerRadius(4)
-                                }
-                                
-                                if let place = item.placeName {
-                                    HStack(spacing: 4) {
-                                        Image(systemName: "mappin.and.ellipse")
-                                        Text(place)
-                                    }
-                                    .font(.caption)
+                        Button {
+                            editingItem = item
+                        } label: {
+                            HStack(alignment: .top, spacing: 12) {
+                                Text(item.date, format: .dateTime.hour().minute())
+                                    .font(.subheadline)
+                                    .monospacedDigit()
                                     .foregroundColor(.secondary)
+                                    .frame(minWidth: 50, alignment: .trailing)
+                                
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text(item.title)
+                                        .font(.headline)
+                                        .foregroundColor(.primary)
+                                    
+                                    if let city = item.cityName {
+                                        Text(city)
+                                            .font(.caption)
+                                            .padding(.horizontal, 6)
+                                            .padding(.vertical, 2)
+                                            .background(Color.blue.opacity(0.1))
+                                            .foregroundColor(.blue)
+                                            .cornerRadius(4)
+                                    }
+                                    
+                                    if let place = item.placeName {
+                                        HStack(spacing: 4) {
+                                            Image(systemName: "mappin.and.ellipse")
+                                            Text(place)
+                                        }
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                    }
                                 }
                             }
+                            .padding(.vertical, 4)
                         }
-                        .padding(.vertical, 4)
                         .swipeActions(edge: .trailing) {
                             Button(role: .destructive) {
                                 modelContext.delete(item)
@@ -265,56 +358,11 @@ struct TripDetailView: View {
             
             if trip.itinerary.isEmpty {
                 Section {
-                    ContentUnavailableView("还没有行程", systemImage: "calendar.badge.plus", description: Text("点击右上角添加你的第一个行程安排"))
+                    ContentUnavailableView("还没有行程", systemImage: "calendar.badge.plus", description: Text("点击下方按钮添加你的第一个行程安排"))
                 }
             }
         }
         .listStyle(.insetGrouped)
-        .navigationTitle(trip.title)
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                HStack {
-                    Button {
-                        isShowingAddExpense = true
-                    } label: {
-                        Label("记一笔", systemImage: "creditcard")
-                    }
-                    
-                    Button {
-                        isShowingAddItinerary = true
-                    } label: {
-                        Label("添加行程", systemImage: "plus")
-                    }
-                    
-                    Menu {
-                        Button("编辑旅行") { isShowingTripEditor = true }
-                        Button("删除旅行", role: .destructive) { isConfirmingDelete = true }
-                    } label: {
-                        Image(systemName: "ellipsis.circle")
-                    }
-                }
-            }
-        }
-        .confirmationDialog("删除这趟旅行？", isPresented: $isConfirmingDelete, titleVisibility: .visible) {
-            Button("删除旅行", role: .destructive) {
-                modelContext.delete(trip)
-                try? modelContext.save()
-                dismiss()
-            }
-            Button("取消", role: .cancel) {}
-        }
-        .sheet(isPresented: $isShowingTripEditor) {
-            TripEditorSheet(trip: trip)
-        }
-        .sheet(isPresented: $isShowingAddItinerary) {
-            AddItineraryItemSheet(trip: trip)
-                .presentationDetents([.medium, .large])
-        }
-        .sheet(isPresented: $isShowingAddExpense) {
-            AddExpenseSheet(trip: trip)
-                .presentationDetents([.medium])
-        }
     }
 }
 
@@ -602,6 +650,7 @@ struct AddItineraryItemSheet: View {
     @Environment(\.modelContext) private var modelContext
     
     var trip: Trip
+    var itemToEdit: ItineraryItem?
     
     @State private var title: String = ""
     @State private var date: Date = .init()
@@ -611,6 +660,11 @@ struct AddItineraryItemSheet: View {
     @State private var cityName: String?
     @State private var cityCoord: CLLocationCoordinate2D?
     @State private var isPickingCity: Bool = false
+    
+    init(trip: Trip, itemToEdit: ItineraryItem? = nil) {
+        self.trip = trip
+        self.itemToEdit = itemToEdit
+    }
     
     var body: some View {
         NavigationStack {
@@ -640,28 +694,57 @@ struct AddItineraryItemSheet: View {
                     }
                 }
             }
-            .navigationTitle("添加行程")
+            .onAppear {
+                if let item = itemToEdit, title.isEmpty {
+                    title = item.title
+                    date = item.date
+                    placeName = item.placeName
+                    if let lat = item.latitude, let lon = item.longitude {
+                        coordinate = CLLocationCoordinate2D(latitude: lat, longitude: lon)
+                    }
+                    cityName = item.cityName
+                    if let lat = item.cityLatitude, let lon = item.cityLongitude {
+                        cityCoord = CLLocationCoordinate2D(latitude: lat, longitude: lon)
+                    }
+                }
+            }
+            .navigationTitle(itemToEdit == nil ? "添加行程" : "编辑行程")
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("取消") { dismiss() }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("添加") {
+                    Button("保存") {
                         guard !title.isEmpty else { return }
                         let lat = coordinate?.latitude
                         let lon = coordinate?.longitude
-                        let item = ItineraryItem(
-                            title: title,
-                            date: date,
-                            placeName: placeName,
-                            latitude: lat,
-                            longitude: lon,
-                            cityName: cityName,
-                            cityLatitude: cityCoord?.latitude,
-                            cityLongitude: cityCoord?.longitude
-                        )
-                        modelContext.insert(item)
-                        trip.itinerary.append(item)
+                        
+                        if let item = itemToEdit {
+                            // Update existing
+                            item.title = title
+                            item.date = date
+                            item.placeName = placeName
+                            item.latitude = lat
+                            item.longitude = lon
+                            item.cityName = cityName
+                            item.cityLatitude = cityCoord?.latitude
+                            item.cityLongitude = cityCoord?.longitude
+                        } else {
+                            // Create new
+                            let item = ItineraryItem(
+                                title: title,
+                                date: date,
+                                placeName: placeName,
+                                latitude: lat,
+                                longitude: lon,
+                                cityName: cityName,
+                                cityLatitude: cityCoord?.latitude,
+                                cityLongitude: cityCoord?.longitude
+                            )
+                            modelContext.insert(item)
+                            trip.itinerary.append(item)
+                        }
+                        
                         try? modelContext.save()
                         dismiss()
                     }
@@ -779,51 +862,65 @@ struct ExpenseListView: View {
     @Environment(\.modelContext) private var modelContext
     var trip: Trip
     
-    private var sorted: [Expense] {
+    private var sortedExpenses: [Expense] {
         trip.expenses.sorted { $0.createdAt > $1.createdAt }
     }
     
-    private var totals: [(String, Double)] {
-        let dict = sorted.reduce(into: [String: Double]()) { acc, exp in
-            acc[exp.currency, default: 0] += exp.amount
+    private var currencyTotals: [(String, Double)] {
+        let totals = trip.expenses.reduce(into: [String: Double]()) { dict, exp in
+            dict[exp.currency, default: 0] += exp.amount
         }
-        return dict.map { ($0.key, $0.value) }.sorted { $0.1 > $1.1 }
+        return totals.map { ($0.key, $0.value) }.sorted { $0.1 > $1.1 }
     }
     
     var body: some View {
         List {
-            if !totals.isEmpty {
-                Section("汇总") {
-                    ForEach(totals, id: \.0) { cur, total in
+            if !currencyTotals.isEmpty {
+                Section("总支出") {
+                    ForEach(currencyTotals, id: \.0) { currency, amount in
                         HStack {
-                            Text(cur)
+                            Text(currency)
                             Spacer()
-                            Text(String(format: "%.2f", total))
-                                .foregroundColor(.secondary)
+                            Text(amount, format: .currency(code: currency))
                         }
                     }
                 }
             }
-            Section("账单") {
-                ForEach(sorted) { exp in
+            
+            Section("明细") {
+                ForEach(sortedExpenses) { expense in
                     HStack {
-                        Text(exp.note.isEmpty ? "支出" : exp.note)
+                        VStack(alignment: .leading) {
+                            Text(expense.note.isEmpty ? "支出" : expense.note)
+                                .font(.headline)
+                            Text(expense.createdAt, format: .dateTime.month().day())
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
                         Spacer()
-                        Text("\(String(format: "%.2f", exp.amount)) \(exp.currency)")
+                        Text(expense.amount, format: .currency(code: expense.currency))
                             .foregroundColor(.secondary)
                     }
-                }
-                .onDelete { offsets in
-                    for index in offsets {
-                        let exp = sorted[index]
-                        trip.expenses.removeAll { $0 === exp }
-                        modelContext.delete(exp)
+                    .swipeActions(edge: .trailing) {
+                        Button(role: .destructive) {
+                            modelContext.delete(expense)
+                            if let idx = trip.expenses.firstIndex(where: { $0.id == expense.id }) {
+                                trip.expenses.remove(at: idx)
+                            }
+                            try? modelContext.save()
+                        } label: {
+                            Label("删除", systemImage: "trash")
+                        }
                     }
-                    try? modelContext.save()
+                }
+            }
+            
+            if trip.expenses.isEmpty {
+                Section {
+                    ContentUnavailableView("还没有支出", systemImage: "creditcard", description: Text("点击底部按钮记录第一笔开销"))
                 }
             }
         }
-        .navigationTitle("全部账单")
-        .toolbar { EditButton() }
+        .listStyle(.insetGrouped)
     }
 }
