@@ -236,40 +236,24 @@ struct TripDetailView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                Menu {
-                    Button("编辑旅行") { isShowingTripEditor = true }
-                    Button("删除旅行", role: .destructive) { isConfirmingDelete = true }
-                } label: {
-                    Image(systemName: "ellipsis.circle")
-                }
-            }
-            
-            ToolbarItem(placement: .bottomBar) {
                 HStack {
-                    Spacer()
-                    if selection == .itinerary {
-                        Button {
+                    Button {
+                        if selection == .itinerary {
                             editingItem = nil
                             isShowingAddItinerary = true
-                        } label: {
-                            HStack {
-                                Image(systemName: "plus.circle.fill")
-                                Text("添加行程")
-                            }
-                            .font(.headline)
-                        }
-                    } else {
-                        Button {
+                        } else {
                             isShowingAddExpense = true
-                        } label: {
-                            HStack {
-                                Image(systemName: "creditcard.fill")
-                                Text("记一笔")
-                            }
-                            .font(.headline)
                         }
+                    } label: {
+                        Image(systemName: "plus")
                     }
-                    Spacer()
+                    
+                    Menu {
+                        Button("编辑旅行") { isShowingTripEditor = true }
+                        Button("删除旅行", role: .destructive) { isConfirmingDelete = true }
+                    } label: {
+                        Image(systemName: "ellipsis.circle")
+                    }
                 }
             }
         }
@@ -339,9 +323,12 @@ struct TripDetailView: View {
                                         .foregroundColor(.secondary)
                                     }
                                 }
+                                Spacer()
                             }
+                            .contentShape(Rectangle()) // 扩大点击区域
                             .padding(.vertical, 4)
                         }
+                        .buttonStyle(.plain) // 消除 List 默认点击样式干扰
                         .swipeActions(edge: .trailing) {
                             Button(role: .destructive) {
                                 modelContext.delete(item)
