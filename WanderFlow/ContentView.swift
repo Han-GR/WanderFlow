@@ -198,31 +198,101 @@ struct TripDetailView: View {
     @State private var isConfirmingDelete: Bool = false
     var trip: Trip
     
-    var body: some View {
-        ScrollView {
-            VStack(spacing: 16) {
-                TripHeaderCard(trip: trip)
-                TripPrimaryActions(
-                    onAddItinerary: { isShowingAddItinerary = true },
-                    onAddExpense: { isShowingAddExpense = true }
-                )
-                TripSummarySection(trip: trip)
-                TripQuickLinks(trip: trip)
-            }
-            .padding(.horizontal, 16)
-            .padding(.top, 12)
-            .padding(.bottom, 24)
+    private var groupedItinerary: [(Date, [ItineraryItem])] {
+        let sorted = trip.itinerary.sorted { $0.date < $1.date }
+        let grouped = Dictionary(grouping: sorted) { item in
+            Calendar.current.startOfDay(for: item.date)
         }
+        return grouped.sorted { $0.key < $1.key }
+    }
+    
+    var body: some View {
+        List {
+            Section {
+                TripHeaderCard(trip: trip)
+                    .listRowInsets(EdgeInsets())
+                    .listRowBackground(Color.clear)
+            }
+            
+            ForEach(groupedItinerary, id: \.0) { date, items in
+                Section(header: Text(date, format: .dateTime.weekday().month().day())) {
+                    ForEach(items) { item in
+                        HStack(alignment: .top, spacing: 12) {
+                            Text(item.date, format: .dateTime.hour().minute())
+                                .font(.subheadline)
+                                .monospacedDigit()
+                                .foregroundColor(.secondary)
+                                .frame(width: 48, alignment: .trailing)
+                            
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(item.title)
+                                    .font(.headline)
+                                
+                                if let city = item.cityName {
+                                    Text(city)
+                                        .font(.caption)
+                                        .padding(.horizontal, 6)
+                                        .padding(.vertical, 2)
+                                        .background(Color.blue.opacity(0.1))
+                                        .foregroundColor(.blue)
+                                        .cornerRadius(4)
+                                }
+                                
+                                if let place = item.placeName {
+                                    HStack(spacing: 4) {
+                                        Image(systemName: "mappin.and.ellipse")
+                                        Text(place)
+                                    }
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                                }
+                            }
+                        }
+                        .padding(.vertical, 4)
+                        .swipeActions(edge: .trailing) {
+                            Button(role: .destructive) {
+                                modelContext.delete(item)
+                                if let idx = trip.itinerary.firstIndex(where: { $0.id == item.id }) {
+                                    trip.itinerary.remove(at: idx)
+                                }
+                            } label: {
+                                Label("删除", systemImage: "trash")
+                            }
+                        }
+                    }
+                }
+            }
+            
+            if trip.itinerary.isEmpty {
+                Section {
+                    ContentUnavailableView("还没有行程", systemImage: "calendar.badge.plus", description: Text("点击右上角添加你的第一个行程安排"))
+                }
+            }
+        }
+        .listStyle(.insetGrouped)
         .navigationTitle(trip.title)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                Menu {
-                    Button("编辑旅行") { isShowingTripEditor = true }
-                    Button("删除旅行", role: .destructive) { isConfirmingDelete = true }
-                } label: {
-                    Image(systemName: "ellipsis.circle")
-                        .imageScale(.large)
+                HStack {
+                    Button {
+                        isShowingAddExpense = true
+                    } label: {
+                        Label("记一笔", systemImage: "creditcard")
+                    }
+                    
+                    Button {
+                        isShowingAddItinerary = true
+                    } label: {
+                        Label("添加行程", systemImage: "plus")
+                    }
+                    
+                    Menu {
+                        Button("编辑旅行") { isShowingTripEditor = true }
+                        Button("删除旅行", role: .destructive) { isConfirmingDelete = true }
+                    } label: {
+                        Image(systemName: "ellipsis.circle")
+                    }
                 }
             }
         }
@@ -547,7 +617,7 @@ struct AddItineraryItemSheet: View {
             Form {
                 Section("行程") {
                     TextField("标题", text: $title)
-                    DatePicker("日期", selection: $date, displayedComponents: .date)
+                    DatePicker("时间", selection: $date, displayedComponents: [.date, .hourAndMinute])
                     Button {
                         isPickingCity = true
                     } label: {
@@ -580,7 +650,16 @@ struct AddItineraryItemSheet: View {
                         guard !title.isEmpty else { return }
                         let lat = coordinate?.latitude
                         let lon = coordinate?.longitude
-                        let item = ItineraryItem(title: title, date: date, placeName: placeName, latitude: lat, longitude: lon)
+                        let item = ItineraryItem(
+                            title: title,
+                            date: date,
+                            placeName: placeName,
+                            latitude: lat,
+                            longitude: lon,
+                            cityName: cityName,
+                            cityLatitude: cityCoord?.latitude,
+                            cityLongitude: cityCoord?.longitude
+                        )
                         modelContext.insert(item)
                         trip.itinerary.append(item)
                         try? modelContext.save()
