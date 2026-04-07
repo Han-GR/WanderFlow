@@ -104,7 +104,9 @@ struct TripDetailView: View {
             .presentationDragIndicator(.visible)
         }
         .sheet(isPresented: $isShowingTripEditor) { TripEditorSheet(trip: trip) }
-        .sheet(isPresented: $isShowingAddItinerary) {
+        .sheet(isPresented: $isShowingAddItinerary, onDismiss: {
+            editingItem = nil
+        }) {
             AddItineraryItemSheet(trip: trip, itemToEdit: editingItem)
                 .presentationDetents([.medium, .large])
         }
