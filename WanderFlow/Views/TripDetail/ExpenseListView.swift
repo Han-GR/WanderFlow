@@ -4,6 +4,7 @@ import SwiftData
 struct ExpenseListView: View {
     @Environment(\.modelContext) private var modelContext
     var trip: Trip
+    @Binding var editingExpense: Expense?
     @State private var expenseToDelete: Expense?
     
     private var sortedExpenses: [Expense] {
@@ -59,6 +60,10 @@ struct ExpenseListView: View {
                     .listRowSeparator(.hidden)
                     .listRowBackground(Color.clear)
                     .listRowInsets(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        editingExpense = expense
+                    }
                     .swipeActions(edge: .trailing) {
                         Button(role: .destructive) {
                             expenseToDelete = expense

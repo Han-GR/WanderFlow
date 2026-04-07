@@ -15,6 +15,7 @@ struct TripDetailView: View {
     @State private var isShowingAddExpense: Bool = false
     @State private var isConfirmingDelete: Bool = false
     @State private var editingItem: ItineraryItem?
+    @State private var editingExpense: Expense?
     @State private var quickExpenseNote: String?
     @State private var quickExpenseCategory: String?
     @State private var quickExpenseOccurredAt: Date?
@@ -46,7 +47,7 @@ struct TripDetailView: View {
                     quickExpenseCategory = "餐饮"
                 })
             } else if selection == .expenses {
-                ExpenseListView(trip: trip)
+                ExpenseListView(trip: trip, editingExpense: $editingExpense)
             } else {
                 TripSummaryView(trip: trip)
             }
@@ -110,14 +111,24 @@ struct TripDetailView: View {
             AddItineraryItemSheet(trip: trip, itemToEdit: editingItem)
                 .presentationDetents([.medium, .large])
         }
-        .sheet(isPresented: $isShowingAddExpense) {
-            AddExpenseSheet(trip: trip, defaultNote: quickExpenseNote, defaultCategory: quickExpenseCategory, defaultOccurredAt: quickExpenseOccurredAt)
+        .sheet(isPresented: $isShowingAddExpense, onDismiss: {
+            editingExpense = nil
+        }) {
+            AddExpenseSheet(trip: trip, expenseToEdit: editingExpense, defaultNote: quickExpenseNote, defaultCategory: quickExpenseCategory, defaultOccurredAt: quickExpenseOccurredAt)
                 .presentationDetents([.medium])
         }
         // 当 editingItem 变化时自动触发 Sheet
         .onChange(of: editingItem) { _, newItem in
             if newItem != nil {
                 isShowingAddItinerary = true
+            }
+        }
+        .onChange(of: editingExpense) { _, newValue in
+            if newValue != nil {
+                quickExpenseNote = nil
+                quickExpenseOccurredAt = nil
+                quickExpenseCategory = nil
+                isShowingAddExpense = true
             }
         }
     }
