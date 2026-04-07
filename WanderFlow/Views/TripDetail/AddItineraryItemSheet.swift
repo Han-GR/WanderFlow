@@ -9,12 +9,19 @@ struct AddItineraryItemSheet: View {
     var trip: Trip
     var itemToEdit: ItineraryItem?
     
+    private enum FocusField: Hashable {
+        case title
+    }
+    
     @State private var title: String = ""
     @State private var date: Date = .init()
     @State private var placeName: String?
     @State private var coordinate: CLLocationCoordinate2D?
     @State private var cityName: String?
     @State private var cityCoord: CLLocationCoordinate2D?
+    @State private var isShowingCityPicker: Bool = false
+    @State private var isShowingPlacePicker: Bool = false
+    @FocusState private var focusedField: FocusField?
     
     init(trip: Trip, itemToEdit: ItineraryItem? = nil) {
         self.trip = trip
@@ -40,33 +47,38 @@ struct AddItineraryItemSheet: View {
             Form {
                 Section("行程") {
                     TextField("标题", text: $title)
+                        .focused($focusedField, equals: .title)
                     DatePicker("时间", selection: $date, displayedComponents: [.date, .hourAndMinute])
-                    NavigationLink {
-                        CityPickerView { name, coord in
-                            cityName = name
-                            cityCoord = coord
-                        }
+                    Button {
+                        openCityPicker()
                     } label: {
                         HStack {
                             Text("城市")
+                                .foregroundStyle(.primary)
                             Spacer()
                             Text(cityName ?? "选择城市")
                                 .foregroundColor(cityName == nil ? .secondary : .primary)
+                            Image(systemName: "chevron.right")
+                                .font(.caption.weight(.semibold))
+                                .foregroundColor(.secondary)
                         }
                     }
-                    NavigationLink {
-                        PlacePickerView(regionBias: regionBiasForSearch()) { name, coord in
-                            placeName = name
-                            coordinate = coord
-                        }
+                    .buttonStyle(.plain)
+                    Button {
+                        openPlacePicker()
                     } label: {
                         HStack {
                             Text("地点")
+                                .foregroundStyle(.primary)
                             Spacer()
                             Text(placeName ?? "选择地点")
                                 .foregroundColor(placeName == nil ? .secondary : .primary)
+                            Image(systemName: "chevron.right")
+                                .font(.caption.weight(.semibold))
+                                .foregroundColor(.secondary)
                         }
                     }
+                    .buttonStyle(.plain)
                 }
             }
             .onAppear {
@@ -125,9 +137,55 @@ struct AddItineraryItemSheet: View {
                     }
                 }
             }
+            .navigationDestination(isPresented: $isShowingCityPicker) {
+                CityPickerView { name, coord in
+                    cityName = name
+                    cityCoord = coord
+                }
+            }
+            .navigationDestination(isPresented: $isShowingPlacePicker) {
+                PlacePickerView(regionBias: regionBiasForSearch()) { name, coord in
+                    placeName = name
+                    coordinate = coord
+                }
+            }
         }
     }
 
+    private func openCityPicker() {
+        let shouldWait = focusedField != nil
+        focusedField = nil
+        dismissKeyboard()
+        if shouldWait {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.06) {
+                isShowingCityPicker = true
+            }
+        } else {
+            DispatchQueue.main.async {
+                isShowingCityPicker = true
+            }
+        }
+    }
+    
+    private func openPlacePicker() {
+        let shouldWait = focusedField != nil
+        focusedField = nil
+        dismissKeyboard()
+        if shouldWait {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.06) {
+                isShowingPlacePicker = true
+            }
+        } else {
+            DispatchQueue.main.async {
+                isShowingPlacePicker = true
+            }
+        }
+    }
+    
+    private func dismissKeyboard() {
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+    }
+    
     private func regionBiasForSearch() -> MKCoordinateRegion? {
         if let lat = cityCoord?.latitude, let lon = cityCoord?.longitude {
             return MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: lat, longitude: lon), span: MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1))

@@ -8,6 +8,7 @@ struct CityPickerView: View {
     var onSelect: (String, CLLocationCoordinate2D) -> Void
     
     @State private var searchTask: Task<Void, Never>?
+    @State private var isSearching: Bool = false
     
     var body: some View {
         List {
@@ -37,11 +38,16 @@ struct CityPickerView: View {
             }
         }
         .navigationTitle("选择城市")
-        .searchable(text: $query, placement: .navigationBarDrawer(displayMode: .always), prompt: "搜索城市")
+        .searchable(text: $query, isPresented: $isSearching, placement: .navigationBarDrawer(displayMode: .always), prompt: "搜索城市")
         .textInputAutocapitalization(.never)
         .autocorrectionDisabled(true)
         .onSubmit(of: .search) {
             search()
+        }
+        .onAppear {
+            DispatchQueue.main.async {
+                isSearching = true
+            }
         }
         .onChange(of: query) { _, newValue in
             let trimmed = newValue.trimmingCharacters(in: .whitespacesAndNewlines)

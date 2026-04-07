@@ -11,6 +11,7 @@ struct PlacePickerView: View {
     @StateObject private var locationManager = LocationManager()
     
     @State private var searchTask: Task<Void, Never>?
+    @State private var isSearching: Bool = false
     
     init(regionBias: MKCoordinateRegion? = nil, onSelect: @escaping (String, CLLocationCoordinate2D) -> Void) {
         self.regionBias = regionBias
@@ -61,11 +62,16 @@ struct PlacePickerView: View {
             }
         }
         .navigationTitle("选择地点")
-        .searchable(text: $query, placement: .navigationBarDrawer(displayMode: .always), prompt: "搜索店铺或地点")
+        .searchable(text: $query, isPresented: $isSearching, placement: .navigationBarDrawer(displayMode: .always), prompt: "搜索店铺或地点")
         .textInputAutocapitalization(.never)
         .autocorrectionDisabled(true)
         .onSubmit(of: .search) {
             search()
+        }
+        .onAppear {
+            DispatchQueue.main.async {
+                isSearching = true
+            }
         }
         .onChange(of: query) { _, newValue in
             let trimmed = newValue.trimmingCharacters(in: .whitespacesAndNewlines)
