@@ -4,6 +4,7 @@ import SwiftData
 struct ExpenseListView: View {
     @Environment(\.modelContext) private var modelContext
     var trip: Trip
+    @State private var expenseToDelete: Expense?
     
     private var sortedExpenses: [Expense] {
         trip.expenses.sorted { (lhs, rhs) in
@@ -60,11 +61,7 @@ struct ExpenseListView: View {
                     .listRowInsets(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
                     .swipeActions(edge: .trailing) {
                         Button(role: .destructive) {
-                            modelContext.delete(expense)
-                            if let idx = trip.expenses.firstIndex(where: { $0.id == expense.id }) {
-                                trip.expenses.remove(at: idx)
-                            }
-                            try? modelContext.save()
+                            expenseToDelete = expense
                         } label: {
                             Label("删除", systemImage: "trash")
                         }
@@ -81,5 +78,20 @@ struct ExpenseListView: View {
         .listStyle(.insetGrouped)
         .scrollContentBackground(.hidden)
         .background(CuteTheme.background)
+        .alert("删除这笔支出？", isPresented: Binding(get: { expenseToDelete != nil }, set: { if !$0 { expenseToDelete = nil } })) {
+            Button("删除", role: .destructive) {
+                if let expenseToDelete {
+                    modelContext.delete(expenseToDelete)
+                    if let idx = trip.expenses.firstIndex(where: { $0.id == expenseToDelete.id }) {
+                        trip.expenses.remove(at: idx)
+                    }
+                    try? modelContext.save()
+                }
+                expenseToDelete = nil
+            }
+            Button("取消", role: .cancel) {
+                expenseToDelete = nil
+            }
+        }
     }
 }

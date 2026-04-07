@@ -27,6 +27,7 @@ struct TripsView: View {
     @State private var newStart: Date = .init()
     @State private var newEnd: Date = .init()
     @State private var newColorHex: String = "#4DA3FF"
+    @State private var tripToDelete: Trip?
     private let themeColors: [(name: String, hex: String)] = [
         ("天空蓝", "#4DA3FF"),
         ("森林绿", "#2ECC71"),
@@ -80,9 +81,6 @@ struct TripsView: View {
                                         .font(.caption)
                                     }
                                     Spacer()
-                                    Image(systemName: "chevron.right")
-                                        .font(.caption.weight(.semibold))
-                                        .foregroundColor(.secondary)
                                 }
                                 .padding(14)
                                 .background(CuteTheme.cardBackground())
@@ -90,21 +88,19 @@ struct TripsView: View {
                             .listRowSeparator(.hidden)
                             .listRowBackground(Color.clear)
                             .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
-                        }
-                        .onDelete { offsets in
-                            for index in offsets {
-                                modelContext.delete(trips[index])
+                            .swipeActions(edge: .trailing) {
+                                Button(role: .destructive) {
+                                    tripToDelete = trip
+                                } label: {
+                                    Label("删除", systemImage: "trash")
+                                }
                             }
-                            try? modelContext.save()
                         }
                     }
                     .listStyle(.plain)
                     .scrollContentBackground(.hidden)
                     .background(CuteTheme.background)
                     .toolbar {
-                        ToolbarItem(placement: .navigationBarTrailing) {
-                            EditButton()
-                        }
                         ToolbarItem {
                             Button {
                                 isPresentingNewTrip = true
@@ -119,6 +115,18 @@ struct TripsView: View {
                 }
             }
             .background(CuteTheme.background)
+            .alert("删除这趟旅行？", isPresented: Binding(get: { tripToDelete != nil }, set: { if !$0 { tripToDelete = nil } })) {
+                Button("删除旅行", role: .destructive) {
+                    if let tripToDelete {
+                        modelContext.delete(tripToDelete)
+                        try? modelContext.save()
+                    }
+                    tripToDelete = nil
+                }
+                Button("取消", role: .cancel) {
+                    tripToDelete = nil
+                }
+            }
             .sheet(isPresented: $isPresentingNewTrip) {
                 NavigationStack {
                     Form {

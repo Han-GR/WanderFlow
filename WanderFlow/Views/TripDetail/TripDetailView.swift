@@ -14,7 +14,6 @@ struct TripDetailView: View {
     @State private var isShowingPasteImport: Bool = false
     @State private var isConfirmingDelete: Bool = false
     @State private var editingItem: ItineraryItem?
-    @State private var editingExpense: Expense?
     @State private var quickExpenseNote: String?
     @State private var quickExpenseCategory: String?
     @State private var quickExpenseOccurredAt: Date?
@@ -39,13 +38,12 @@ struct TripDetailView: View {
             .background(CuteTheme.background)
             
             if selection == .itinerary {
-                TimelineView(trip: trip, editingItineraryItem: $editingItem, editingExpense: $editingExpense, onQuickAddExpense: { item in
-                    editingExpense = nil
+                TimelineView(trip: trip, editingItineraryItem: $editingItem, onQuickAddExpense: { item in
                     isShowingAddExpense = true
                     quickExpenseNote = item.title
                     quickExpenseOccurredAt = item.date
                     quickExpenseCategory = "餐饮"
-                }, showExpenses: false)
+                })
             } else if selection == .expenses {
                 ExpenseListView(trip: trip)
             } else {
@@ -64,7 +62,9 @@ struct TripDetailView: View {
                             isShowingAddItinerary = true
                         }
                         Button("记一笔") {
-                            editingExpense = nil
+                            quickExpenseNote = nil
+                            quickExpenseOccurredAt = nil
+                            quickExpenseCategory = "其他"
                             isShowingAddExpense = true
                         }
                         Button("粘贴解析导入") {
@@ -99,7 +99,7 @@ struct TripDetailView: View {
                 .presentationDetents([.medium, .large])
         }
         .sheet(isPresented: $isShowingAddExpense) {
-            AddExpenseSheet(trip: trip, expenseToEdit: editingExpense, defaultNote: quickExpenseNote, defaultCategory: quickExpenseCategory, defaultOccurredAt: quickExpenseOccurredAt)
+            AddExpenseSheet(trip: trip, defaultNote: quickExpenseNote, defaultCategory: quickExpenseCategory, defaultOccurredAt: quickExpenseOccurredAt)
                 .presentationDetents([.medium])
         }
         .sheet(isPresented: $isShowingPasteImport) {
@@ -110,11 +110,6 @@ struct TripDetailView: View {
         .onChange(of: editingItem) { _, newItem in
             if newItem != nil {
                 isShowingAddItinerary = true
-            }
-        }
-        .onChange(of: editingExpense) { _, newValue in
-            if newValue != nil {
-                isShowingAddExpense = true
             }
         }
     }

@@ -6,11 +6,10 @@ struct TimelineView: View {
     
     var trip: Trip
     @Binding var editingItineraryItem: ItineraryItem?
-    @Binding var editingExpense: Expense?
     var onQuickAddExpense: ((ItineraryItem) -> Void)?
-    var showExpenses: Bool = true
     
     private let calendar = Calendar.current
+    @State private var itineraryToDelete: ItineraryItem?
     
     var body: some View {
         List {
@@ -23,11 +22,6 @@ struct TimelineView: View {
                                     .font(.subheadline)
                                     .monospacedDigit()
                                     .foregroundColor(.secondary)
-                                if entry.isAllDay {
-                                    Text("全天")
-                                        .font(.caption2.weight(.medium))
-                                        .foregroundColor(.secondary)
-                                }
                             }
                             .frame(minWidth: 52, alignment: .trailing)
                             
@@ -39,13 +33,7 @@ struct TimelineView: View {
                                         .font(.headline)
                                         .foregroundColor(.primary)
                                     Spacer(minLength: 0)
-                                    if let amountText = entry.amountText {
-                                        Text(amountText)
-                                            .font(.headline)
-                                            .monospacedDigit()
-                                            .foregroundColor(.secondary)
-                                    }
-                                    if entry.kind == .itinerary, let item = entry.itineraryItem {
+                                    if let item = entry.itineraryItem {
                                         Button {
                                             onQuickAddExpense?(item)
                                         } label: {
@@ -71,12 +59,7 @@ struct TimelineView: View {
                         .background(CuteTheme.cardBackground())
                         .contentShape(Rectangle())
                         .onTapGesture {
-                            switch entry.kind {
-                            case .itinerary:
-                                editingItineraryItem = entry.itineraryItem
-                            case .expense, .lodgingAllocation:
-                                editingExpense = entry.expense
-                            }
+                            editingItineraryItem = entry.itineraryItem
                         }
                         .listRowSeparator(.hidden)
                         .listRowBackground(Color.clear)
@@ -84,21 +67,7 @@ struct TimelineView: View {
                         .swipeActions(edge: .trailing) {
                             if let itinerary = entry.itineraryItem {
                                 Button(role: .destructive) {
-                                    modelContext.delete(itinerary)
-                                    if let idx = trip.itinerary.firstIndex(where: { $0.id == itinerary.id }) {
-                                        trip.itinerary.remove(at: idx)
-                                    }
-                                    try? modelContext.save()
-                                } label: {
-                                    Label("删除", systemImage: "trash")
-                                }
-                            } else if let expense = entry.expense {
-                                Button(role: .destructive) {
-                                    modelContext.delete(expense)
-                                    if let idx = trip.expenses.firstIndex(where: { $0.id == expense.id }) {
-                                        trip.expenses.remove(at: idx)
-                                    }
-                                    try? modelContext.save()
+                                    itineraryToDelete = itinerary
                                 } label: {
                                     Label("删除", systemImage: "trash")
                                 }
@@ -108,57 +77,40 @@ struct TimelineView: View {
                 }
             }
             
-            if trip.itinerary.isEmpty && trip.expenses.isEmpty {
+            if trip.itinerary.isEmpty {
                 Section {
-                    ContentUnavailableView("还没有记录", systemImage: "sparkles", description: Text("点击右上角 + 开始添加行程或支出"))
+                    ContentUnavailableView("还没有行程", systemImage: "calendar.badge.plus", description: Text("点击右上角 + 添加你的第一个行程安排"))
                 }
             }
         }
         .listStyle(.insetGrouped)
         .scrollContentBackground(.hidden)
         .background(CuteTheme.background)
+        .alert("删除这条行程？", isPresented: Binding(get: { itineraryToDelete != nil }, set: { if !$0 { itineraryToDelete = nil } })) {
+            Button("删除", role: .destructive) {
+                if let itineraryToDelete {
+                    modelContext.delete(itineraryToDelete)
+                    if let idx = trip.itinerary.firstIndex(where: { $0.id == itineraryToDelete.id }) {
+                        trip.itinerary.remove(at: idx)
+                    }
+                    try? modelContext.save()
+                }
+                itineraryToDelete = nil
+            }
+            Button("取消", role: .cancel) {
+                itineraryToDelete = nil
+            }
+        }
     }
     
     private var groupedEntries: [TimelineDayGroup] {
-        let entries = timelineEntries()
-        let grouped = Dictionary(grouping: entries) { entry in
-            entry.day
+        let sorted = trip.itinerary.sorted { $0.date < $1.date }
+        let grouped = Dictionary(grouping: sorted) { item in
+            calendar.startOfDay(for: item.date)
         }
         return grouped
-            .map { TimelineDayGroup(day: $0.key, entries: $0.value.sorted(by: sortEntries)) }
+            .map { TimelineDayGroup(day: $0.key, entries: $0.value.map { TimelineEntry(itinerary: $0) }) }
             .sorted { $0.day < $1.day }
-    }
-    
-    private func sortEntries(_ a: TimelineEntry, _ b: TimelineEntry) -> Bool {
-        if a.isAllDay != b.isAllDay {
-            return a.isAllDay && !b.isAllDay
-        }
-        return a.sortDate < b.sortDate
-    }
-    
-    private func timelineEntries() -> [TimelineEntry] {
-        var result: [TimelineEntry] = []
-        
-        for item in trip.itinerary {
-            result.append(TimelineEntry(itinerary: item))
-        }
-        
-        if showExpenses {
-            for exp in trip.expenses {
-                if exp.category == "住宿", let start = exp.stayStartDate, let nights = exp.nights, nights > 0 {
-                    let perNight = exp.amount / Double(nights)
-                    for offset in 0..<nights {
-                        if let day = calendar.date(byAdding: .day, value: offset, to: calendar.startOfDay(for: start)) {
-                            result.append(TimelineEntry(lodgingAllocationFrom: exp, day: day, perNightAmount: perNight))
-                        }
-                    }
-                } else {
-                    result.append(TimelineEntry(expense: exp))
-                }
-            }
-        }
-        
-        return result
     }
 }
 
@@ -168,111 +120,39 @@ private struct TimelineDayGroup {
 }
 
 private struct TimelineEntry: Identifiable {
-    enum Kind {
-        case itinerary
-        case expense
-        case lodgingAllocation
-    }
-    
     let id: AnyHashable
-    let kind: Kind
     
     let day: Date
-    let sortDate: Date
-    let isAllDay: Bool
     
     let title: String
     let subtitle: String?
     
-    let amount: Double?
-    let currency: String?
-    
     let itineraryItem: ItineraryItem?
-    let expense: Expense?
     
     init(itinerary: ItineraryItem) {
         self.id = itinerary.id
-        self.kind = .itinerary
         self.day = Calendar.current.startOfDay(for: itinerary.date)
-        self.sortDate = itinerary.date
-        self.isAllDay = false
         self.title = itinerary.title
         if let place = itinerary.placeName, !place.isEmpty {
             self.subtitle = place
         } else {
             self.subtitle = itinerary.cityName
         }
-        self.amount = nil
-        self.currency = nil
         self.itineraryItem = itinerary
-        self.expense = nil
-    }
-    
-    init(expense: Expense) {
-        self.id = expense.id
-        self.kind = .expense
-        let date = expense.occurredAt ?? expense.createdAt
-        self.day = Calendar.current.startOfDay(for: date)
-        self.sortDate = date
-        self.isAllDay = expense.occurredAt == nil
-        self.title = expense.note.isEmpty ? expense.category : expense.note
-        self.subtitle = expense.note.isEmpty ? nil : expense.category
-        self.amount = expense.amount
-        self.currency = expense.currency
-        self.itineraryItem = nil
-        self.expense = expense
-    }
-    
-    init(lodgingAllocationFrom expense: Expense, day: Date, perNightAmount: Double) {
-        self.id = AnyHashable(UUID())
-        self.kind = .lodgingAllocation
-        self.day = Calendar.current.startOfDay(for: day)
-        self.sortDate = Calendar.current.startOfDay(for: day)
-        self.isAllDay = true
-        self.title = expense.note.isEmpty ? "住宿" : expense.note
-        let nightsText = expense.nights.map { "\($0)晚" } ?? ""
-        self.subtitle = nightsText.isEmpty ? "住宿分摊" : "住宿分摊 · \(nightsText)"
-        self.amount = perNightAmount
-        self.currency = expense.currency
-        self.itineraryItem = nil
-        self.expense = expense
     }
     
     var timeText: String {
-        if isAllDay { return "—" }
         if let d = itineraryItem?.date {
-            return d.formatted(date: .omitted, time: .shortened)
-        }
-        if let d = expense?.occurredAt {
             return d.formatted(date: .omitted, time: .shortened)
         }
         return "—"
     }
     
-    var amountText: String? {
-        guard let amount, let currency else { return nil }
-        return amount.formatted(.currency(code: currency))
-    }
-    
     var iconName: String {
-        switch kind {
-        case .itinerary:
-            return "mappin.and.ellipse"
-        case .expense:
-            return "creditcard"
-        case .lodgingAllocation:
-            return "bed.double"
-        }
+        "mappin.and.ellipse"
     }
     
     var iconColor: Color {
-        switch kind {
-        case .itinerary:
-            return CuteTheme.accent
-        case .expense:
-            return .orange
-        case .lodgingAllocation:
-            return .purple
-        }
+        CuteTheme.accent
     }
 }
