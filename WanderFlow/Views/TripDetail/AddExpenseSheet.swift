@@ -69,11 +69,11 @@ struct AddExpenseSheet: View {
                     TextField("金额", text: $amountText)
                         .keyboardType(.decimalPad)
                     Picker("类别", selection: $category) {
-                        Text("机票").tag("机票")
                         Text("餐饮").tag("餐饮")
                         Text("住宿").tag("住宿")
                         Text("交通").tag("交通")
                         Text("门票").tag("门票")
+                        Text("购物").tag("购物")
                         Text("其他").tag("其他")
                     }
                     TextField("备注", text: $note)

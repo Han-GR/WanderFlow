@@ -18,7 +18,7 @@ struct TripSummaryView: View {
                 }
             }
             
-            Section("按天总计（含住宿分摊）") {
+            Section("按天总计") {
                 ForEach(dailyTotals, id: \.day) { row in
                     VStack(alignment: .leading, spacing: 6) {
                         Text(row.day, format: .dateTime.weekday().month().day())

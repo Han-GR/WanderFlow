@@ -37,7 +37,7 @@ struct TimelineView: View {
                                         Button {
                                             onQuickAddExpense?(item)
                                         } label: {
-                                            Image(systemName: "banknote.fill")
+                                            Image(systemName: "creditcard.rewards")
                                                 .font(.subheadline.weight(.semibold))
                                                 .foregroundColor(.white)
                                                 .frame(width: 34, height: 34)
