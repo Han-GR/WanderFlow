@@ -136,11 +136,11 @@ private struct TripDetailAddMenuSheet: View {
             .padding(.top, 20)
             
             VStack(spacing: 10) {
-                TripDetailMenuRow(title: "添加行程", subtitle: "几点去哪儿", systemImage: "mappin.and.ellipse") {
+                TripDetailMenuRow(title: "行程", systemImage: "mappin.and.ellipse") {
                     dismiss()
                     DispatchQueue.main.async { onAddItinerary() }
                 }
-                TripDetailMenuRow(title: "记一笔支出", subtitle: "金额与类别", systemImage: "creditcard") {
+                TripDetailMenuRow(title: "支出", systemImage: "creditcard") {
                     dismiss()
                     DispatchQueue.main.async { onAddExpense() }
                 }
@@ -167,11 +167,11 @@ private struct TripDetailMoreMenuSheet: View {
             .padding(.top, 20)
             
             VStack(spacing: 10) {
-                TripDetailMenuRow(title: "编辑旅行", subtitle: "标题/日期/颜色", systemImage: "pencil") {
+                TripDetailMenuRow(title: "编辑旅行", systemImage: "pencil") {
                     dismiss()
                     DispatchQueue.main.async { onEditTrip() }
                 }
-                TripDetailMenuRow(title: "删除旅行", subtitle: "需要二次确认", systemImage: "trash", isDestructive: true) {
+                TripDetailMenuRow(title: "删除旅行",systemImage: "trash", isDestructive: true) {
                     dismiss()
                     DispatchQueue.main.async { onDeleteTrip() }
                 }
@@ -185,7 +185,6 @@ private struct TripDetailMoreMenuSheet: View {
 
 private struct TripDetailMenuRow: View {
     var title: String
-    var subtitle: String
     var systemImage: String
     var isDestructive: Bool = false
     var action: () -> Void
@@ -207,9 +206,6 @@ private struct TripDetailMenuRow: View {
                     Text(title)
                         .font(.headline)
                         .foregroundColor(isDestructive ? .red : .primary)
-                    Text(subtitle)
-                        .font(.caption)
-                        .foregroundColor(.secondary)
                 }
                 
                 Spacer()

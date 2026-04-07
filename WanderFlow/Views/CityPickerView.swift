@@ -7,49 +7,54 @@ struct CityPickerView: View {
     @State private var results: [MKMapItem] = []
     var onSelect: (String, CLLocationCoordinate2D) -> Void
     
+    @State private var searchTask: Task<Void, Never>?
+    
     var body: some View {
-        NavigationStack {
-            List {
-                Section {
-                    HStack {
-                        TextField("搜索城市", text: $query)
-                            .submitLabel(.search)
-                            .onSubmit { search() }
-                        Button("搜索") { search() }
-                    }
+        List {
+            Section("搜索结果") {
+                if results.isEmpty && !query.isEmpty {
+                    Text("无结果").foregroundColor(.secondary)
                 }
                 
-                Section("搜索结果") {
-                    if results.isEmpty && !query.isEmpty {
-                        Text("无结果").foregroundColor(.secondary)
-                    }
-                    
-                    ForEach(results, id: \.self) { item in
-                        Button {
-                            // 优先使用 item.location.coordinate
-                            let coord: CLLocationCoordinate2D
-                            if #available(iOS 26.0, *) {
-                                coord = item.location.coordinate
-                            } else {
-                                coord = item.placemark.coordinate
-                            }
-                            
-                            // 使用 item.name 作为城市名
-                            let name = item.name ?? "未知城市"
-                            onSelect(name, coord)
-                            dismiss()
-                        } label: {
-                            VStack(alignment: .leading) {
-                                Text(item.name ?? "城市")
-                                // 如果有地址详情（这里暂时省略，避免使用废弃的 placemark.title）
-                                // 如果需要更详细地址，可以尝试 item.postalAddress (如果可用)
-                                // 这里简单处理，仅显示名字
-                            }
+                ForEach(results, id: \.self) { item in
+                    Button {
+                        let coord: CLLocationCoordinate2D
+                        if #available(iOS 26.0, *) {
+                            coord = item.location.coordinate
+                        } else {
+                            coord = item.placemark.coordinate
+                        }
+                        
+                        let name = item.name ?? "未知城市"
+                        onSelect(name, coord)
+                        dismiss()
+                    } label: {
+                        VStack(alignment: .leading) {
+                            Text(item.name ?? "城市")
                         }
                     }
                 }
             }
-            .navigationTitle("选择城市")
+        }
+        .navigationTitle("选择城市")
+        .searchable(text: $query, placement: .navigationBarDrawer(displayMode: .always), prompt: "搜索城市")
+        .textInputAutocapitalization(.never)
+        .autocorrectionDisabled(true)
+        .onSubmit(of: .search) {
+            search()
+        }
+        .onChange(of: query) { _, newValue in
+            let trimmed = newValue.trimmingCharacters(in: .whitespacesAndNewlines)
+            searchTask?.cancel()
+            guard !trimmed.isEmpty else {
+                results = []
+                return
+            }
+            searchTask = Task { @MainActor in
+                try? await Task.sleep(nanoseconds: 300_000_000)
+                if Task.isCancelled { return }
+                search()
+            }
         }
     }
     

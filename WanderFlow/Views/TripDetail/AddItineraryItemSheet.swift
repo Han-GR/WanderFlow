@@ -13,10 +13,8 @@ struct AddItineraryItemSheet: View {
     @State private var date: Date = .init()
     @State private var placeName: String?
     @State private var coordinate: CLLocationCoordinate2D?
-    @State private var isPickingPlace: Bool = false
     @State private var cityName: String?
     @State private var cityCoord: CLLocationCoordinate2D?
-    @State private var isPickingCity: Bool = false
     
     init(trip: Trip, itemToEdit: ItineraryItem? = nil) {
         self.trip = trip
@@ -43,8 +41,11 @@ struct AddItineraryItemSheet: View {
                 Section("行程") {
                     TextField("标题", text: $title)
                     DatePicker("时间", selection: $date, displayedComponents: [.date, .hourAndMinute])
-                    Button {
-                        isPickingCity = true
+                    NavigationLink {
+                        CityPickerView { name, coord in
+                            cityName = name
+                            cityCoord = coord
+                        }
                     } label: {
                         HStack {
                             Text("城市")
@@ -53,8 +54,11 @@ struct AddItineraryItemSheet: View {
                                 .foregroundColor(cityName == nil ? .secondary : .primary)
                         }
                     }
-                    Button {
-                        isPickingPlace = true
+                    NavigationLink {
+                        PlacePickerView(regionBias: regionBiasForSearch()) { name, coord in
+                            placeName = name
+                            coordinate = coord
+                        }
                     } label: {
                         HStack {
                             Text("地点")
@@ -119,19 +123,6 @@ struct AddItineraryItemSheet: View {
                         try? modelContext.save()
                         dismiss()
                     }
-                }
-            }
-            .sheet(isPresented: $isPickingCity) {
-                CityPickerView { name, coord in
-                    cityName = name
-                    cityCoord = coord
-                    // 切换城市后，如果地点不在新城市范围内，或许可以考虑清空地点（可选）
-                }
-            }
-            .sheet(isPresented: $isPickingPlace) {
-                PlacePickerView(regionBias: regionBiasForSearch()) { name, coord in
-                    placeName = name
-                    coordinate = coord
                 }
             }
         }
