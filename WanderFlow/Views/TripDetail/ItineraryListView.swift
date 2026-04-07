@@ -56,9 +56,13 @@ struct ItineraryListView: View {
                                 Spacer()
                             }
                             .contentShape(Rectangle()) // 扩大点击区域
-                            .padding(.vertical, 4)
+                            .padding(14)
+                            .background(CuteTheme.cardBackground())
                         }
                         .buttonStyle(.plain) // 消除 List 默认点击样式干扰
+                        .listRowSeparator(.hidden)
+                        .listRowBackground(Color.clear)
+                        .listRowInsets(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
                         .swipeActions(edge: .trailing) {
                             Button(role: .destructive) {
                                 modelContext.delete(item)
@@ -76,10 +80,12 @@ struct ItineraryListView: View {
             
             if trip.itinerary.isEmpty {
                 Section {
-                    ContentUnavailableView("还没有行程", systemImage: "calendar.badge.plus", description: Text("点击下方按钮添加你的第一个行程安排"))
+                    ContentUnavailableView("还没有行程", systemImage: "calendar.badge.plus", description: Text("点击右上角 + 添加你的第一个行程安排"))
                 }
             }
         }
         .listStyle(.insetGrouped)
+        .scrollContentBackground(.hidden)
+        .background(CuteTheme.background)
     }
 }

@@ -29,6 +29,7 @@ struct WanderFlowApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .tint(CuteTheme.accent)
         }
         .modelContainer(sharedModelContainer)
     }

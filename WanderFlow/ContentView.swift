@@ -7,29 +7,10 @@
 
 import SwiftUI
 import SwiftData
-import MapKit
 
 struct ContentView: View {
-    @State private var selectedTab: Int = 0
-
     var body: some View {
-        TabView(selection: $selectedTab) {
-            TripsView()
-                .tabItem {
-                    Label("行程", systemImage: "list.bullet.rectangle")
-                }
-                .tag(0)
-            MapView()
-                .tabItem {
-                    Label("足迹", systemImage: "map")
-                }
-                .tag(1)
-            ProfileView()
-                .tabItem {
-                    Label("我的", systemImage: "person.crop.circle")
-                }
-                .tag(2)
-        }
+        TripsView()
     }
 }
 
@@ -57,8 +38,19 @@ struct TripsView: View {
             Group {
                 if trips.isEmpty {
                     VStack(spacing: 16) {
+                        ZStack {
+                            Circle()
+                                .fill(CuteTheme.gradient)
+                                .frame(width: 88, height: 88)
+                            Image(systemName: "sparkles")
+                                .font(.system(size: 30, weight: .semibold))
+                                .foregroundColor(CuteTheme.accent)
+                        }
                         Text("创建你的第一段旅程")
                             .font(.title3.weight(.semibold))
+                        Text("记录行程与花销，让出行更轻松")
+                            .foregroundColor(.secondary)
+                            .font(.footnote)
                         Button {
                             isPresentingNewTrip = true
                         } label: {
@@ -73,19 +65,31 @@ struct TripsView: View {
                     List {
                         ForEach(trips) { trip in
                             NavigationLink(value: trip) {
-                                VStack(alignment: .leading, spacing: 4) {
-                                    HStack(spacing: 8) {
-                                        Circle()
-                                            .fill(Color(hex: trip.coverColorHex ?? "#4DA3FF"))
-                                            .frame(width: 10, height: 10)
+                                HStack(spacing: 12) {
+                                    Circle()
+                                        .fill(Color(hex: trip.coverColorHex ?? "#4DA3FF"))
+                                        .frame(width: 12, height: 12)
+                                    VStack(alignment: .leading, spacing: 6) {
                                         Text(trip.title)
                                             .font(.headline)
-                                    }
-                                    Text(trip.createdAt, style: .date)
+                                        HStack(spacing: 6) {
+                                            Image(systemName: "calendar")
+                                            Text(trip.createdAt, style: .date)
+                                        }
                                         .foregroundColor(.secondary)
-                                        .font(.footnote)
+                                        .font(.caption)
+                                    }
+                                    Spacer()
+                                    Image(systemName: "chevron.right")
+                                        .font(.caption.weight(.semibold))
+                                        .foregroundColor(.secondary)
                                 }
+                                .padding(14)
+                                .background(CuteTheme.cardBackground())
                             }
+                            .listRowSeparator(.hidden)
+                            .listRowBackground(Color.clear)
+                            .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
                         }
                         .onDelete { offsets in
                             for index in offsets {
@@ -94,6 +98,9 @@ struct TripsView: View {
                             try? modelContext.save()
                         }
                     }
+                    .listStyle(.plain)
+                    .scrollContentBackground(.hidden)
+                    .background(CuteTheme.background)
                     .toolbar {
                         ToolbarItem(placement: .navigationBarTrailing) {
                             EditButton()
@@ -111,6 +118,7 @@ struct TripsView: View {
                     }
                 }
             }
+            .background(CuteTheme.background)
             .sheet(isPresented: $isPresentingNewTrip) {
                 NavigationStack {
                     Form {
@@ -158,34 +166,3 @@ struct TripsView: View {
         }
     }
 }
-
-struct MapView: View {
-    @State private var position: MapCameraPosition = .automatic
-    var body: some View {
-        NavigationStack {
-            Map(position: $position)
-                .mapStyle(.standard)
-                .ignoresSafeArea()
-        }
-    }
-}
-
-struct ProfileView: View {
-    var body: some View {
-        NavigationStack {
-            List {
-                Section("账户") {
-                    Text("使用 iCloud 同步你的数据")
-                }
-                Section("统计") {
-                    Text("去过的国家")
-                    Text("旅行里程")
-                }
-                Section("设置") {
-                    Text("偏好设置")
-                }
-            }
-        }
-    }
-}
-

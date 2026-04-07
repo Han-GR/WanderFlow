@@ -11,42 +11,64 @@ struct TripDetailView: View {
     @State private var isShowingTripEditor: Bool = false
     @State private var isShowingAddItinerary: Bool = false
     @State private var isShowingAddExpense: Bool = false
+    @State private var isShowingPasteImport: Bool = false
     @State private var isConfirmingDelete: Bool = false
     @State private var editingItem: ItineraryItem?
+    @State private var editingExpense: Expense?
+    @State private var quickExpenseNote: String?
+    @State private var quickExpenseCategory: String?
+    @State private var quickExpenseOccurredAt: Date?
     
     enum DetailTab: String, CaseIterable {
         case itinerary = "行程"
         case expenses = "支出"
+        case summary = "汇总"
     }
     
     var body: some View {
         VStack(spacing: 0) {
+            TripDetailHeader(trip: trip)
             Picker("视图切换", selection: $selection) {
                 ForEach(DetailTab.allCases, id: \.self) { tab in
                     Text(tab.rawValue).tag(tab)
                 }
             }
             .pickerStyle(.segmented)
-            .padding()
-            .background(Color(UIColor.systemGroupedBackground))
+            .padding(.horizontal, 16)
+            .padding(.bottom, 10)
+            .background(CuteTheme.background)
             
             if selection == .itinerary {
-                ItineraryListView(trip: trip, editingItem: $editingItem)
-            } else {
+                TimelineView(trip: trip, editingItineraryItem: $editingItem, editingExpense: $editingExpense, onQuickAddExpense: { item in
+                    editingExpense = nil
+                    isShowingAddExpense = true
+                    quickExpenseNote = item.title
+                    quickExpenseOccurredAt = item.date
+                    quickExpenseCategory = "餐饮"
+                }, showExpenses: false)
+            } else if selection == .expenses {
                 ExpenseListView(trip: trip)
+            } else {
+                TripSummaryView(trip: trip)
             }
         }
+        .background(CuteTheme.background)
         .navigationTitle(trip.title)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 HStack {
-                    Button {
-                        if selection == .itinerary {
+                    Menu {
+                        Button("添加行程") {
                             editingItem = nil
                             isShowingAddItinerary = true
-                        } else {
+                        }
+                        Button("记一笔") {
+                            editingExpense = nil
                             isShowingAddExpense = true
+                        }
+                        Button("粘贴解析导入") {
+                            isShowingPasteImport = true
                         }
                     } label: {
                         Image(systemName: "plus")
@@ -77,13 +99,22 @@ struct TripDetailView: View {
                 .presentationDetents([.medium, .large])
         }
         .sheet(isPresented: $isShowingAddExpense) {
-            AddExpenseSheet(trip: trip)
+            AddExpenseSheet(trip: trip, expenseToEdit: editingExpense, defaultNote: quickExpenseNote, defaultCategory: quickExpenseCategory, defaultOccurredAt: quickExpenseOccurredAt)
                 .presentationDetents([.medium])
+        }
+        .sheet(isPresented: $isShowingPasteImport) {
+            PasteImportSheet(trip: trip)
+                .presentationDetents([.large])
         }
         // 当 editingItem 变化时自动触发 Sheet
         .onChange(of: editingItem) { _, newItem in
             if newItem != nil {
                 isShowingAddItinerary = true
+            }
+        }
+        .onChange(of: editingExpense) { _, newValue in
+            if newValue != nil {
+                isShowingAddExpense = true
             }
         }
     }

@@ -6,7 +6,11 @@ struct ExpenseListView: View {
     var trip: Trip
     
     private var sortedExpenses: [Expense] {
-        trip.expenses.sorted { $0.createdAt > $1.createdAt }
+        trip.expenses.sorted { (lhs, rhs) in
+            let l = lhs.occurredAt ?? lhs.createdAt
+            let r = rhs.occurredAt ?? rhs.createdAt
+            return l > r
+        }
     }
     
     private var currencyTotals: [(String, Double)] {
@@ -26,6 +30,7 @@ struct ExpenseListView: View {
                             Spacer()
                             Text(amount, format: .currency(code: currency))
                         }
+                        .listRowSeparator(.hidden)
                     }
                 }
             }
@@ -34,16 +39,25 @@ struct ExpenseListView: View {
                 ForEach(sortedExpenses) { expense in
                     HStack {
                         VStack(alignment: .leading) {
-                            Text(expense.note.isEmpty ? "支出" : expense.note)
+                            Text(expense.note.isEmpty ? expense.category : expense.note)
                                 .font(.headline)
-                            Text(expense.createdAt, format: .dateTime.month().day())
+                            Text(expense.note.isEmpty ? "" : expense.category)
+                                .font(.caption2.weight(.medium))
+                                .foregroundColor(.secondary)
+                            Text(expense.occurredAt ?? expense.createdAt, format: .dateTime.month().day())
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                         }
                         Spacer()
                         Text(expense.amount, format: .currency(code: expense.currency))
                             .foregroundColor(.secondary)
+                            .monospacedDigit()
                     }
+                    .padding(14)
+                    .background(CuteTheme.cardBackground())
+                    .listRowSeparator(.hidden)
+                    .listRowBackground(Color.clear)
+                    .listRowInsets(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
                     .swipeActions(edge: .trailing) {
                         Button(role: .destructive) {
                             modelContext.delete(expense)
@@ -60,10 +74,12 @@ struct ExpenseListView: View {
             
             if trip.expenses.isEmpty {
                 Section {
-                    ContentUnavailableView("还没有支出", systemImage: "creditcard", description: Text("点击底部按钮记录第一笔开销"))
+                    ContentUnavailableView("还没有支出", systemImage: "creditcard", description: Text("点击右上角 + 记录第一笔开销"))
                 }
             }
         }
         .listStyle(.insetGrouped)
+        .scrollContentBackground(.hidden)
+        .background(CuteTheme.background)
     }
 }
