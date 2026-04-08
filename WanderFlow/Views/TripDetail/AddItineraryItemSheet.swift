@@ -72,7 +72,7 @@ struct AddItineraryItemSheet: View {
                     .buttonStyle(.plain)
                     
                     if let cityName, let defaultCity = trip.defaultCityName, cityName != defaultCity {
-                        Toggle("设为本趟默认城市", isOn: $setAsTripDefaultCity)
+                        Toggle("设为本次旅行默认城市", isOn: $setAsTripDefaultCity)
                     }
                     
                     Button {

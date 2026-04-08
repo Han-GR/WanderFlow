@@ -30,7 +30,7 @@ struct TripDetailHeader: View {
                 onEditDefaultCity?()
             } label: {
                 HStack(spacing: 8) {
-                    Image(systemName: "mappin")
+                    Image(systemName: "mappin.and.ellipse")
                         .foregroundColor(CuteTheme.accent)
                     Text("默认城市")
                         .foregroundColor(.secondary)
