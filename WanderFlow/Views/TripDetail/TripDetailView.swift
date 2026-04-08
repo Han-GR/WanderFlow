@@ -58,7 +58,6 @@ struct TripDetailView: View {
             }
         }
         .background(CuteTheme.background)
-        .tint(trip.resolvedStyle.accent)
         .navigationTitle(trip.title)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -68,11 +67,13 @@ struct TripDetailView: View {
                 } label: {
                     Image(systemName: "plus")
                 }
+                .tint(trip.resolvedStyle.accent)
                 Button {
                     isShowingMoreMenu = true
                 } label: {
                     Image(systemName: "ellipsis.circle")
                 }
+                .tint(trip.resolvedStyle.accent)
             }
         }
         .alert("删除本次旅行？", isPresented: $isConfirmingDelete) {
