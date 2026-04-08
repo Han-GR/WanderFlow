@@ -110,16 +110,16 @@ struct TripsView: View {
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
-                        isShowingSettings = true
+                        isPresentingNewTrip = true
                     } label: {
-                        Image(systemName: "gearshape")
+                        Image(systemName: "plus")
                     }
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
-                        isPresentingNewTrip = true
+                        isShowingSettings = true
                     } label: {
-                        Image(systemName: "plus")
+                        Image(systemName: "gearshape")
                     }
                 }
             }
