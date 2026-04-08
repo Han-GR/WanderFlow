@@ -62,19 +62,16 @@ struct TripDetailView: View {
         .navigationTitle(trip.title)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                HStack {
-                    Button {
-                        isShowingAddMenu = true
-                    } label: {
-                        Image(systemName: "plus")
-                    }
-                    
-                    Button {
-                        isShowingMoreMenu = true
-                    } label: {
-                        Image(systemName: "ellipsis.circle")
-                    }
+            ToolbarItemGroup(placement: .topBarTrailing) {
+                Button {
+                    isShowingAddMenu = true
+                } label: {
+                    Image(systemName: "plus")
+                }
+                Button {
+                    isShowingMoreMenu = true
+                } label: {
+                    Image(systemName: "ellipsis.circle")
                 }
             }
         }

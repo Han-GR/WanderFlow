@@ -91,18 +91,16 @@ struct TripsView: View {
             }
             .background(CuteTheme.background)
             .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
+                ToolbarItemGroup(placement: .topBarTrailing) {
                     Button {
                         isPresentingNewTrip = true
                     } label: {
                         Image(systemName: "plus")
                     }
-                }
-                ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
                         isShowingSettings = true
                     } label: {
-                        Image(systemName: "gearshape")
+                        Image(systemName: "ellipsis.circle")
                     }
                 }
             }
