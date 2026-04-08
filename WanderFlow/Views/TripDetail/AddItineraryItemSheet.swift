@@ -110,6 +110,7 @@ struct AddItineraryItemSheet: View {
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("取消") { dismiss() }
+                        .tint(trip.resolvedStyle.accent)
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("保存") {
@@ -156,6 +157,7 @@ struct AddItineraryItemSheet: View {
                         try? modelContext.save()
                         dismiss()
                     }
+                    .tint(trip.resolvedStyle.accent)
                 }
             }
             .navigationDestination(isPresented: $isShowingCityPicker) {

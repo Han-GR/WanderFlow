@@ -30,6 +30,7 @@ struct TripEditorSheet: View {
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("取消") { dismiss() }
+                        .tint(trip.resolvedStyle.accent)
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("保存") {
@@ -41,6 +42,7 @@ struct TripEditorSheet: View {
                         try? modelContext.save()
                         dismiss()
                     }
+                    .tint(trip.resolvedStyle.accent)
                 }
             }
             .onAppear {

@@ -78,6 +78,7 @@ struct AddExpenseSheet: View {
                         Text("购物").tag("购物")
                         Text("其他").tag("其他")
                     }
+                    .tint(trip.resolvedStyle.accent)
                     TextField("备注", text: $note)
                     NavigationLink {
                         CurrencyPickerView(selectedCurrencyCode: $currency)
@@ -96,7 +97,7 @@ struct AddExpenseSheet: View {
                 }
                 
                 Section("时间") {
-                    Toggle("指定时间", isOn: $hasTime)
+                    Toggle("指定时间", isOn: $hasTime).tint(trip.resolvedStyle.accent)
                     if hasTime {
                         DatePicker("发生时间", selection: $occurredAt, displayedComponents: [.date, .hourAndMinute])
                     } else {
@@ -117,6 +118,7 @@ struct AddExpenseSheet: View {
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("取消") { dismiss() }
+                        .tint(trip.resolvedStyle.accent)
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("保存") {
@@ -151,6 +153,7 @@ struct AddExpenseSheet: View {
                         try? modelContext.save()
                         dismiss()
                     }
+                    .tint(trip.resolvedStyle.accent)
                 }
             }
         }
