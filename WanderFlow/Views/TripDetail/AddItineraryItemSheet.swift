@@ -19,6 +19,7 @@ struct AddItineraryItemSheet: View {
     @State private var coordinate: CLLocationCoordinate2D?
     @State private var cityName: String?
     @State private var cityCoord: CLLocationCoordinate2D?
+    @State private var setAsTripDefaultCity: Bool = false
     @State private var isShowingCityPicker: Bool = false
     @State private var isShowingPlacePicker: Bool = false
     @FocusState private var focusedField: FocusField?
@@ -37,6 +38,11 @@ struct AddItineraryItemSheet: View {
             }
             _cityName = State(initialValue: item.cityName)
             if let lat = item.cityLatitude, let lon = item.cityLongitude {
+                _cityCoord = State(initialValue: CLLocationCoordinate2D(latitude: lat, longitude: lon))
+            }
+        } else {
+            if let name = trip.defaultCityName, let lat = trip.defaultCityLatitude, let lon = trip.defaultCityLongitude {
+                _cityName = State(initialValue: name)
                 _cityCoord = State(initialValue: CLLocationCoordinate2D(latitude: lat, longitude: lon))
             }
         }
@@ -64,6 +70,11 @@ struct AddItineraryItemSheet: View {
                         }
                     }
                     .buttonStyle(.plain)
+                    
+                    if let cityName, let defaultCity = trip.defaultCityName, cityName != defaultCity {
+                        Toggle("设为本趟默认城市", isOn: $setAsTripDefaultCity)
+                    }
+                    
                     Button {
                         openPlacePicker()
                     } label: {
@@ -132,6 +143,16 @@ struct AddItineraryItemSheet: View {
                             trip.itinerary.append(item)
                         }
                         
+                        if trip.defaultCityName == nil, let name = cityName, let coord = cityCoord {
+                            trip.defaultCityName = name
+                            trip.defaultCityLatitude = coord.latitude
+                            trip.defaultCityLongitude = coord.longitude
+                        } else if setAsTripDefaultCity, let name = cityName, let coord = cityCoord {
+                            trip.defaultCityName = name
+                            trip.defaultCityLatitude = coord.latitude
+                            trip.defaultCityLongitude = coord.longitude
+                        }
+                        
                         try? modelContext.save()
                         dismiss()
                     }
@@ -141,6 +162,11 @@ struct AddItineraryItemSheet: View {
                 CityPickerView { name, coord in
                     cityName = name
                     cityCoord = coord
+                    if trip.defaultCityName == nil {
+                        setAsTripDefaultCity = true
+                    } else if let defaultCity = trip.defaultCityName, defaultCity != name {
+                        setAsTripDefaultCity = false
+                    }
                 }
             }
             .navigationDestination(isPresented: $isShowingPlacePicker) {

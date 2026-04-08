@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import CoreLocation
 
 struct TripDetailView: View {
     @Environment(\.modelContext) private var modelContext
@@ -13,12 +14,14 @@ struct TripDetailView: View {
     @State private var isShowingTripEditor: Bool = false
     @State private var isShowingAddItinerary: Bool = false
     @State private var isShowingAddExpense: Bool = false
+    @State private var isShowingDefaultCityPicker: Bool = false
     @State private var isConfirmingDelete: Bool = false
     @State private var editingItem: ItineraryItem?
     @State private var editingExpense: Expense?
     @State private var quickExpenseNote: String?
     @State private var quickExpenseCategory: String?
     @State private var quickExpenseOccurredAt: Date?
+    
     
     enum DetailTab: String, CaseIterable {
         case itinerary = "行程"
@@ -28,7 +31,9 @@ struct TripDetailView: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            TripDetailHeader(trip: trip)
+            TripDetailHeader(trip: trip, onEditDefaultCity: {
+                isShowingDefaultCityPicker = true
+            })
             Picker("视图切换", selection: $selection) {
                 ForEach(DetailTab.allCases, id: \.self) { tab in
                     Text(tab.rawValue).tag(tab)
@@ -105,6 +110,30 @@ struct TripDetailView: View {
             .presentationDragIndicator(.visible)
         }
         .sheet(isPresented: $isShowingTripEditor) { TripEditorSheet(trip: trip) }
+        .sheet(isPresented: $isShowingDefaultCityPicker) {
+            NavigationStack {
+                CityPickerView { name, coord in
+                    trip.defaultCityName = name
+                    trip.defaultCityLatitude = coord.latitude
+                    trip.defaultCityLongitude = coord.longitude
+                    try? modelContext.save()
+                }
+                .toolbar {
+                    if trip.defaultCityName != nil {
+                        ToolbarItem(placement: .topBarTrailing) {
+                            Button("清除") {
+                                trip.defaultCityName = nil
+                                trip.defaultCityLatitude = nil
+                                trip.defaultCityLongitude = nil
+                                try? modelContext.save()
+                                isShowingDefaultCityPicker = false
+                            }
+                            .foregroundColor(.red)
+                        }
+                    }
+                }
+            }
+        }
         .sheet(isPresented: $isShowingAddItinerary, onDismiss: {
             editingItem = nil
         }) {
