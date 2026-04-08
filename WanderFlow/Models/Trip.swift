@@ -8,6 +8,7 @@ final class Trip {
     var startDate: Date?
     var endDate: Date?
     var coverColorHex: String?
+    var styleRaw: String?
     
     var defaultCityName: String?
     var defaultCityLatitude: Double?
@@ -21,6 +22,7 @@ final class Trip {
         startDate: Date? = nil,
         endDate: Date? = nil,
         coverColorHex: String? = nil,
+        styleRaw: String? = nil,
         defaultCityName: String? = nil,
         defaultCityLatitude: Double? = nil,
         defaultCityLongitude: Double? = nil,
@@ -32,6 +34,7 @@ final class Trip {
         self.startDate = startDate
         self.endDate = endDate
         self.coverColorHex = coverColorHex
+        self.styleRaw = styleRaw
         self.defaultCityName = defaultCityName
         self.defaultCityLatitude = defaultCityLatitude
         self.defaultCityLongitude = defaultCityLongitude

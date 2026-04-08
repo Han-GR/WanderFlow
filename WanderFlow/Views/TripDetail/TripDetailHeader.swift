@@ -11,7 +11,7 @@ struct TripDetailHeader: View {
                     .font(.title3.weight(.semibold))
                 Spacer()
                 Image(systemName: "airplane")
-                    .foregroundColor(CuteTheme.accent)
+                    .foregroundColor(trip.resolvedStyle.accent)
             }
             
             HStack(spacing: 6) {

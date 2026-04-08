@@ -27,13 +27,8 @@ struct TripsView: View {
     @State private var newTitle: String = ""
     @State private var newStart: Date = .init()
     @State private var newEnd: Date = .init()
-    @State private var newColorHex: String = "#4DA3FF"
+    @State private var newStyle: TripStyle = .fresh
     @State private var tripToDelete: Trip?
-    private let themeColors: [(name: String, hex: String)] = [
-        ("天空蓝", "#4DA3FF"),
-        ("森林绿", "#2ECC71"),
-        ("夕阳橙", "#FF8A3D")
-    ]
     
     var body: some View {
         NavigationStack {
@@ -61,7 +56,7 @@ struct TripsView: View {
                             NavigationLink(value: trip) {
                                 HStack(spacing: 12) {
                                     Circle()
-                                        .fill(Color(hex: trip.coverColorHex ?? "#4DA3FF"))
+                                        .fill(trip.resolvedStyle.gradient)
                                         .frame(width: 12, height: 12)
                                     VStack(alignment: .leading, spacing: 6) {
                                         Text(trip.title)
@@ -137,22 +132,41 @@ struct TripsView: View {
                             TextField("旅行标题", text: $newTitle)
                             DatePicker("开始日期", selection: $newStart, displayedComponents: .date)
                             DatePicker("结束日期", selection: $newEnd, displayedComponents: .date)
-                            VStack(alignment: .leading) {
-                                Text("主题颜色")
-                                HStack {
-                                    ForEach(themeColors, id: \.hex) { item in
-                                        Button {
-                                            newColorHex = item.hex
-                                        } label: {
-                                            Circle()
-                                                .fill(Color(hex: item.hex))
-                                                .frame(width: 28, height: 28)
+                            VStack(alignment: .leading, spacing: 10) {
+                                Text("旅行风格")
+                                ScrollView(.horizontal, showsIndicators: false) {
+                                    HStack(spacing: 10) {
+                                        ForEach(TripStyle.allCases) { style in
+                                            Button {
+                                                newStyle = style
+                                            } label: {
+                                                HStack(spacing: 10) {
+                                                    ZStack {
+                                                        Circle()
+                                                            .fill(style.gradient)
+                                                            .frame(width: 34, height: 34)
+                                                        Image(systemName: style.systemImage)
+                                                            .font(.subheadline.weight(.semibold))
+                                                            .foregroundColor(style.accent)
+                                                    }
+                                                    Text(style.title)
+                                                        .font(.subheadline.weight(.semibold))
+                                                        .foregroundColor(.primary)
+                                                    Spacer(minLength: 0)
+                                                }
+                                                .padding(.horizontal, 12)
+                                                .padding(.vertical, 10)
+                                                .frame(width: 120)
+                                                .background(CuteTheme.cardBackground(cornerRadius: 16))
                                                 .overlay(
-                                                    Circle()
-                                                        .stroke(newColorHex == item.hex ? Color.primary : .clear, lineWidth: 2)
+                                                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                                                        .stroke(newStyle == style ? style.accent.opacity(0.55) : Color.clear, lineWidth: 2)
                                                 )
+                                            }
+                                            .buttonStyle(.plain)
                                         }
                                     }
+                                    .padding(.vertical, 2)
                                 }
                             }
                         }
@@ -164,7 +178,7 @@ struct TripsView: View {
                         }
                         ToolbarItem(placement: .confirmationAction) {
                             Button("创建") {
-                                let trip = Trip(title: newTitle.isEmpty ? "未命名旅行" : newTitle, startDate: newStart, endDate: newEnd, coverColorHex: newColorHex)
+                                let trip = Trip(title: newTitle.isEmpty ? "未命名旅行" : newTitle, startDate: newStart, endDate: newEnd, coverColorHex: newStyle.legacyCoverHex, styleRaw: newStyle.rawValue)
                                 modelContext.insert(trip)
                                 try? modelContext.save()
                                 newTitle = ""
