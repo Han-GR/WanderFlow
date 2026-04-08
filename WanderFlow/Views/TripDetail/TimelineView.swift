@@ -130,7 +130,7 @@ private struct TimelineEntry: Identifiable {
         self.day = Calendar.current.startOfDay(for: itinerary.date)
         self.title = itinerary.title
         if let place = itinerary.placeName, !place.isEmpty {
-            self.subtitle = place
+            self.subtitle = (itinerary.cityName ?? "") + " - \(place)"
         } else {
             self.subtitle = itinerary.cityName
         }

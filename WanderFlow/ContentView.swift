@@ -78,7 +78,7 @@ struct TripsView: View {
                 } else {
                     List {
                         ForEach(yearSections) { section in
-                            Section("\(section.year)年") {
+                            Section(header: Text(verbatim: "\(section.year)年")) {
                                 ForEach(section.trips) { trip in
                                     NavigationLink(value: trip) {
                                         HStack(spacing: 12) {
@@ -129,7 +129,7 @@ struct TripsView: View {
                     Button {
                         isShowingSettings = true
                     } label: {
-                        Image(systemName: "ellipsis.circle")
+                        Image(systemName: "gearshape")
                     }
                 }
             }
