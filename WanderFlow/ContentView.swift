@@ -30,6 +30,31 @@ struct TripsView: View {
     @State private var newStyle: TripStyle = .fresh
     @State private var tripToDelete: Trip?
     
+    private let calendar = Calendar.current
+    
+    private struct TripYearSection: Identifiable {
+        let year: Int
+        let trips: [Trip]
+        
+        var id: Int { year }
+    }
+    
+    private func sortDate(for trip: Trip) -> Date {
+        trip.startDate ?? trip.createdAt
+    }
+    
+    private var yearSections: [TripYearSection] {
+        let sortedTrips = trips.sorted { sortDate(for: $0) > sortDate(for: $1) }
+        let grouped = Dictionary(grouping: sortedTrips) { trip in
+            calendar.component(.year, from: sortDate(for: trip))
+        }
+        return grouped.keys
+            .sorted(by: >)
+            .map { year in
+                TripYearSection(year: year, trips: grouped[year] ?? [])
+            }
+    }
+    
     var body: some View {
         NavigationStack {
             Group {
@@ -52,31 +77,35 @@ struct TripsView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else {
                     List {
-                        ForEach(trips) { trip in
-                            NavigationLink(value: trip) {
-                                HStack(spacing: 12) {
-                                    Circle()
-                                        .fill(trip.resolvedStyle.gradient)
-                                        .frame(width: 12, height: 12)
-                                    VStack(alignment: .leading, spacing: 6) {
-                                        Text(trip.title)
-                                            .font(AppTypography.sectionTitle)
-                                        HStack(spacing: 6) {
-                                            Image(systemName: "calendar")
-                                            Text(trip.createdAt, style: .date)
+                        ForEach(yearSections) { section in
+                            Section("\(section.year)年") {
+                                ForEach(section.trips) { trip in
+                                    NavigationLink(value: trip) {
+                                        HStack(spacing: 12) {
+                                            Circle()
+                                                .fill(trip.resolvedStyle.gradient)
+                                                .frame(width: 12, height: 12)
+                                            VStack(alignment: .leading, spacing: 6) {
+                                                Text(trip.title)
+                                                    .font(AppTypography.sectionTitle)
+                                                HStack(spacing: 6) {
+                                                    Image(systemName: "calendar")
+                                                    Text(sortDate(for: trip), format: .dateTime.month().day())
+                                                }
+                                                .foregroundColor(.secondary)
+                                                .font(AppTypography.caption)
+                                            }
+                                            Spacer()
                                         }
-                                        .foregroundColor(.secondary)
-                                        .font(AppTypography.caption)
                                     }
-                                    Spacer()
-                                }
-                            }
-                            .listCard(insets: EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
-                            .swipeActions(edge: .trailing) {
-                                Button(role: .destructive) {
-                                    tripToDelete = trip
-                                } label: {
-                                    Label("删除", systemImage: "trash")
+                                    .listCard(insets: EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+                                    .swipeActions(edge: .trailing) {
+                                        Button(role: .destructive) {
+                                            tripToDelete = trip
+                                        } label: {
+                                            Label("删除", systemImage: "trash")
+                                        }
+                                    }
                                 }
                             }
                         }
