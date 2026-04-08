@@ -12,6 +12,8 @@ struct CardMenuSheet: View {
     @Environment(\.dismiss) private var dismiss
     
     var items: [CardMenuItem]
+    var accent: Color = CuteTheme.accent
+    var iconBackground: LinearGradient = CuteTheme.gradient
     
     var body: some View {
         VStack(spacing: 12) {
@@ -21,7 +23,7 @@ struct CardMenuSheet: View {
             
             VStack(spacing: 10) {
                 ForEach(items) { item in
-                    TripDetailMenuRow(title: item.title, systemImage: item.systemImage, isDestructive: item.isDestructive) {
+                    TripDetailMenuRow(title: item.title, systemImage: item.systemImage, isDestructive: item.isDestructive, accent: accent, iconBackground: iconBackground) {
                         dismiss()
                         DispatchQueue.main.async { item.action() }
                     }

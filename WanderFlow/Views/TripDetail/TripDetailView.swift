@@ -96,7 +96,7 @@ struct TripDetailView: View {
                     quickExpenseCategory = "其他"
                     isShowingAddExpense = true
                 }
-            ])
+            ], accent: trip.resolvedStyle.accent, iconBackground: trip.resolvedStyle.gradient)
             .presentationDetents([.height(200)])
             .presentationDragIndicator(.visible)
         }
@@ -108,7 +108,7 @@ struct TripDetailView: View {
                 CardMenuItem(title: "删除旅行", systemImage: "trash", isDestructive: true) {
                     isConfirmingDelete = true
                 }
-            ])
+            ], accent: trip.resolvedStyle.accent, iconBackground: trip.resolvedStyle.gradient)
             .presentationDetents([.height(200)])
             .presentationDragIndicator(.visible)
         }
