@@ -58,6 +58,7 @@ struct TripDetailView: View {
             }
         }
         .background(CuteTheme.background)
+        .tint(trip.resolvedStyle.accent)
         .navigationTitle(trip.title)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -77,7 +78,7 @@ struct TripDetailView: View {
                 }
             }
         }
-        .alert("删除这趟旅行？", isPresented: $isConfirmingDelete) {
+        .alert("删除本次旅行？", isPresented: $isConfirmingDelete) {
             Button("删除旅行", role: .destructive) {
                 modelContext.delete(trip)
                 try? modelContext.save()

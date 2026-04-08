@@ -98,12 +98,13 @@ struct TimelineView: View {
     }
     
     private var groupedEntries: [TimelineDayGroup] {
+        let accent = trip.resolvedStyle.accent
         let sorted = trip.itinerary.sorted { $0.date < $1.date }
         let grouped = Dictionary(grouping: sorted) { item in
             calendar.startOfDay(for: item.date)
         }
         return grouped
-            .map { TimelineDayGroup(day: $0.key, entries: $0.value.map { TimelineEntry(itinerary: $0) }) }
+            .map { TimelineDayGroup(day: $0.key, entries: $0.value.map { TimelineEntry(itinerary: $0, accent: accent) }) }
             .sorted { $0.day < $1.day }
     }
 }
@@ -122,8 +123,9 @@ private struct TimelineEntry: Identifiable {
     let subtitle: String?
     
     let itineraryItem: ItineraryItem?
+    let iconColor: Color
     
-    init(itinerary: ItineraryItem) {
+    init(itinerary: ItineraryItem, accent: Color) {
         self.id = itinerary.id
         self.day = Calendar.current.startOfDay(for: itinerary.date)
         self.title = itinerary.title
@@ -133,6 +135,7 @@ private struct TimelineEntry: Identifiable {
             self.subtitle = itinerary.cityName
         }
         self.itineraryItem = itinerary
+        self.iconColor = accent
     }
     
     var timeText: String {
@@ -144,9 +147,5 @@ private struct TimelineEntry: Identifiable {
     
     var iconName: String {
         "mappin.and.ellipse"
-    }
-    
-    var iconColor: Color {
-        CuteTheme.accent
     }
 }

@@ -109,7 +109,7 @@ struct TripsView: View {
             .navigationDestination(isPresented: $isShowingSettings) {
                 SettingsView()
             }
-            .alert("删除这趟旅行？", isPresented: Binding(get: { tripToDelete != nil }, set: { if !$0 { tripToDelete = nil } })) {
+            .alert("删除本次旅行？", isPresented: Binding(get: { tripToDelete != nil }, set: { if !$0 { tripToDelete = nil } })) {
                 Button("删除旅行", role: .destructive) {
                     if let tripToDelete {
                         modelContext.delete(tripToDelete)
