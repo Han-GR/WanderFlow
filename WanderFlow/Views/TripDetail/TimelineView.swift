@@ -55,15 +55,11 @@ struct TimelineView: View {
                                 }
                             }
                         }
-                        .padding(14)
-                        .background(CuteTheme.cardBackground())
+                        .listCard(insets: EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
                         .contentShape(Rectangle())
                         .onTapGesture {
                             editingItineraryItem = entry.itineraryItem
                         }
-                        .listRowSeparator(.hidden)
-                        .listRowBackground(Color.clear)
-                        .listRowInsets(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
                         .swipeActions(edge: .trailing) {
                             if let itinerary = entry.itineraryItem {
                                 Button(role: .destructive) {

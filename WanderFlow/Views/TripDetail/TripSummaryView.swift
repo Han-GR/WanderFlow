@@ -35,11 +35,7 @@ struct TripSummaryView: View {
                             .font(.subheadline)
                         }
                     }
-                    .padding(14)
-                    .background(CuteTheme.cardBackground())
-                    .listRowSeparator(.hidden)
-                    .listRowBackground(Color.clear)
-                    .listRowInsets(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
+                    .listCard(insets: EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
                 }
             }
         }
@@ -105,4 +101,3 @@ private struct DailyExpense {
     let currency: String
     let amount: Double
 }
-
