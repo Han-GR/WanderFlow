@@ -10,7 +10,7 @@ struct TripDetailHeader: View {
                 Text(trip.title)
                     .font(.title3.weight(.semibold))
                 Spacer()
-                Image(systemName: "airplane")
+                Image(systemName: trip.resolvedStyle.systemImage)
                     .foregroundColor(trip.resolvedStyle.accent)
             }
             
