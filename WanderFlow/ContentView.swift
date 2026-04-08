@@ -48,19 +48,11 @@ struct TripsView: View {
                                 .font(.system(size: 30, weight: .semibold))
                                 .foregroundColor(CuteTheme.accent)
                         }
-                        Text("创建你的第一段旅程")
+                        Text("点击 + 创建你的第一段旅程")
                             .font(.title3.weight(.semibold))
                         Text("记录行程与花销，让出行更轻松")
                             .foregroundColor(.secondary)
                             .font(.footnote)
-                        Button {
-                            isPresentingNewTrip = true
-                        } label: {
-                            Text("新建旅行")
-                                .frame(maxWidth: .infinity)
-                        }
-                        .buttonStyle(.borderedProminent)
-                        .padding(.horizontal, 24)
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else {
