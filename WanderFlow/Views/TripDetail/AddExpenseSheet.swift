@@ -4,6 +4,7 @@ import SwiftData
 struct AddExpenseSheet: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
+    @AppStorage(AppSettings.defaultCurrencyCodeKey) private var defaultCurrencyCode: String = AppSettings.resolvedDefaultCurrencyCode()
     
     var trip: Trip
     var expenseToEdit: Expense?
@@ -13,7 +14,7 @@ struct AddExpenseSheet: View {
     
     @State private var amountText: String = ""
     @State private var note: String = ""
-    @State private var currency: String = "CNY"
+    @State private var currency: String = AppSettings.resolvedDefaultCurrencyCode()
     @State private var category: String = "其他"
     @State private var hasTime: Bool = true
     @State private var occurredAt: Date = .init()
@@ -47,6 +48,7 @@ struct AddExpenseSheet: View {
                 _nights = State(initialValue: n)
             }
         } else {
+            _currency = State(initialValue: AppSettings.resolvedDefaultCurrencyCode())
             if let dn = defaultNote {
                 _note = State(initialValue: dn)
             }
@@ -77,11 +79,19 @@ struct AddExpenseSheet: View {
                         Text("其他").tag("其他")
                     }
                     TextField("备注", text: $note)
-                    Picker("币种", selection: $currency) {
-                        Text("CNY").tag("CNY")
-                        Text("USD").tag("USD")
-                        Text("EUR").tag("EUR")
-                        Text("JPY").tag("JPY")
+                    NavigationLink {
+                        CurrencyPickerView(selectedCurrencyCode: $currency)
+                    } label: {
+                        HStack {
+                            Text("币种")
+                            Spacer()
+                            if currency == defaultCurrencyCode {
+                                Text("默认")
+                                    .foregroundColor(.secondary)
+                            }
+                            Text(currency)
+                                .foregroundColor(.secondary)
+                        }
                     }
                 }
                 

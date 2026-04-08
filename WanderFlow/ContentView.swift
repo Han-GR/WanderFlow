@@ -23,6 +23,7 @@ struct TripsView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \Trip.createdAt, order: .reverse) private var trips: [Trip]
     @State private var isPresentingNewTrip: Bool = false
+    @State private var isShowingSettings: Bool = false
     @State private var newTitle: String = ""
     @State private var newStart: Date = .init()
     @State private var newEnd: Date = .init()
@@ -100,21 +101,31 @@ struct TripsView: View {
                     .listStyle(.plain)
                     .scrollContentBackground(.hidden)
                     .background(CuteTheme.background)
-                    .toolbar {
-                        ToolbarItem {
-                            Button {
-                                isPresentingNewTrip = true
-                            } label: {
-                                Label("新建旅行", systemImage: "plus")
-                            }
-                        }
-                    }
                     .navigationDestination(for: Trip.self) { trip in
                         TripDetailView(trip: trip)
                     }
                 }
             }
             .background(CuteTheme.background)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button {
+                        isShowingSettings = true
+                    } label: {
+                        Image(systemName: "gearshape")
+                    }
+                }
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button {
+                        isPresentingNewTrip = true
+                    } label: {
+                        Image(systemName: "plus")
+                    }
+                }
+            }
+            .navigationDestination(isPresented: $isShowingSettings) {
+                SettingsView()
+            }
             .alert("删除这趟旅行？", isPresented: Binding(get: { tripToDelete != nil }, set: { if !$0 { tripToDelete = nil } })) {
                 Button("删除旅行", role: .destructive) {
                     if let tripToDelete {
