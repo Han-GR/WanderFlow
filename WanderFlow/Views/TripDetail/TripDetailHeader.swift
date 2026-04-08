@@ -22,8 +22,8 @@ struct TripDetailHeader: View {
             .foregroundColor(.secondary)
             
             HStack(spacing: 8) {
-                Chip(text: "行程 \(trip.itinerary.count)", systemImage: "list.bullet")
-                Chip(text: "支出 \(trip.expenses.count)", systemImage: "creditcard")
+                Chip(text: "行程 \(trip.itinerary.count)", systemImage: "list.bullet", background: AnyShapeStyle(trip.resolvedStyle.gradient))
+                Chip(text: "支出 \(trip.expenses.count)", systemImage: "creditcard", background: AnyShapeStyle(trip.resolvedStyle.gradient))
             }
             
             Button {

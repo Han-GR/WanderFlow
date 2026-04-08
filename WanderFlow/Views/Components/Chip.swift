@@ -3,6 +3,7 @@ import SwiftUI
 struct Chip: View {
     var text: String
     var systemImage: String
+    var background: AnyShapeStyle = AnyShapeStyle(CuteTheme.gradient)
     
     var body: some View {
         HStack(spacing: 6) {
@@ -12,7 +13,7 @@ struct Chip: View {
         .font(AppTypography.captionEmphasis)
         .padding(.vertical, 6)
         .padding(.horizontal, 10)
-        .background(CuteTheme.gradient)
+        .background(background)
         .clipShape(Capsule())
     }
 }

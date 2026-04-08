@@ -41,7 +41,7 @@ struct TimelineView: View {
                                                 .font(AppTypography.body.weight(.semibold))
                                                 .foregroundColor(.white)
                                                 .frame(width: 34, height: 34)
-                                                .background(CuteTheme.gradient)
+                                                .background(trip.resolvedStyle.gradient)
                                                 .clipShape(Circle())
                                         }
                                         .buttonStyle(.plain)
