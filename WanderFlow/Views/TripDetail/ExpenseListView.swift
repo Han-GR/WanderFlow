@@ -76,9 +76,7 @@ struct ExpenseListView: View {
                 }
             }
         }
-        .listStyle(.insetGrouped)
-        .scrollContentBackground(.hidden)
-        .background(CuteTheme.background)
+        .cuteListStyle()
         .alert("删除这笔支出？", isPresented: Binding(get: { expenseToDelete != nil }, set: { if !$0 { expenseToDelete = nil } })) {
             Button("删除", role: .destructive) {
                 if let expenseToDelete {

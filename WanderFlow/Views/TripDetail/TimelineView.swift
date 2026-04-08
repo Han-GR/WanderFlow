@@ -79,9 +79,7 @@ struct TimelineView: View {
                 }
             }
         }
-        .listStyle(.insetGrouped)
-        .scrollContentBackground(.hidden)
-        .background(CuteTheme.background)
+        .cuteListStyle()
         .alert("删除这条行程？", isPresented: Binding(get: { itineraryToDelete != nil }, set: { if !$0 { itineraryToDelete = nil } })) {
             Button("删除", role: .destructive) {
                 if let itineraryToDelete {

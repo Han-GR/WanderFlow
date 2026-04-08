@@ -39,9 +39,7 @@ struct TripSummaryView: View {
                 }
             }
         }
-        .listStyle(.insetGrouped)
-        .scrollContentBackground(.hidden)
-        .background(CuteTheme.background)
+        .cuteListStyle()
     }
     
     private var currencyTotals: [(String, Double)] {

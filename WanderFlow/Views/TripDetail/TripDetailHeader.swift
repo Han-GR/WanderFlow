@@ -22,8 +22,8 @@ struct TripDetailHeader: View {
             .foregroundColor(.secondary)
             
             HStack(spacing: 8) {
-                chip(text: "行程 \(trip.itinerary.count)", systemImage: "list.bullet")
-                chip(text: "支出 \(trip.expenses.count)", systemImage: "creditcard")
+                Chip(text: "行程 \(trip.itinerary.count)", systemImage: "list.bullet")
+                Chip(text: "支出 \(trip.expenses.count)", systemImage: "creditcard")
             }
             
             Button {
@@ -61,15 +61,4 @@ struct TripDetailHeader: View {
         return "\(start.formatted(date: .abbreviated, time: .omitted)) · \(end.formatted(date: .abbreviated, time: .omitted))"
     }
     
-    private func chip(text: String, systemImage: String) -> some View {
-        HStack(spacing: 6) {
-            Image(systemName: systemImage)
-            Text(text)
-        }
-        .font(.caption.weight(.medium))
-        .padding(.vertical, 6)
-        .padding(.horizontal, 10)
-        .background(CuteTheme.gradient)
-        .clipShape(Capsule())
-    }
 }
