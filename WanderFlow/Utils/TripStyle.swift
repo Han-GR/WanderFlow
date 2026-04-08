@@ -45,7 +45,7 @@ enum TripStyle: String, CaseIterable, Identifiable {
         switch self {
         case .fresh: return Color(hex: "#4DA3FF")
         case .warm: return Color(hex: "#FF8A3D")
-        case .forest: return Color(hex: "#2ECC71")
+        case .forest: return Color(hex: "#B14A3A")
         case .nature: return Color(hex: "#34C759")
         case .ocean: return Color(hex: "#00B8D9")
         case .drive: return Color(hex: "#7C5CFC")
@@ -62,7 +62,7 @@ enum TripStyle: String, CaseIterable, Identifiable {
         case .warm:
             return LinearGradient(colors: [Color(hex: "#FF8A3D").opacity(0.22), Color(hex: "#FFCC66").opacity(0.18), Color(hex: "#FF6B8B").opacity(0.18)], startPoint: .topLeading, endPoint: .bottomTrailing)
         case .forest:
-            return LinearGradient(colors: [Color(hex: "#2ECC71").opacity(0.22), Color(hex: "#7AD957").opacity(0.18), Color(hex: "#4DA3FF").opacity(0.14)], startPoint: .topLeading, endPoint: .bottomTrailing)
+            return LinearGradient(colors: [Color(hex: "#B14A3A").opacity(0.22), Color(hex: "#E08A6C").opacity(0.18), Color(hex: "#F4D3B0").opacity(0.12)], startPoint: .topLeading, endPoint: .bottomTrailing)
         case .nature:
             return LinearGradient(colors: [Color(hex: "#34C759").opacity(0.22), Color(hex: "#A8E063").opacity(0.18), Color(hex: "#56CCF2").opacity(0.12)], startPoint: .topLeading, endPoint: .bottomTrailing)
         case .night:
@@ -82,7 +82,7 @@ enum TripStyle: String, CaseIterable, Identifiable {
         switch self {
         case .fresh: return "#4DA3FF"
         case .warm: return "#FF8A3D"
-        case .forest: return "#2ECC71"
+        case .forest: return "#B14A3A"
         case .nature: return "#34C759"
         case .ocean: return "#00B8D9"
         case .drive: return "#7C5CFC"
@@ -101,6 +101,7 @@ extension Trip {
         if let hex = coverColorHex?.uppercased() {
             if hex.contains("FF8A3D") { return .warm }
             if hex.contains("2ECC71") { return .forest }
+            if hex.contains("B14A3A") { return .forest }
             if hex.contains("34C759") { return .nature }
             if hex.contains("7C5CFC") { return .drive }
             if hex.contains("6C63FF") { return .night }

@@ -23,7 +23,7 @@ struct TripEditorSheet: View {
                         ForEach(TripStyle.allCases) { s in
                             Text(s.title).tag(s)
                         }
-                    }
+                    }.tint(trip.resolvedStyle.accent)
                 }
             }
             .navigationTitle("编辑旅行")
