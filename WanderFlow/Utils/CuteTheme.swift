@@ -5,6 +5,10 @@ enum CuteTheme {
     static let tintPink = Color(red: 1.0, green: 0.58, blue: 0.80)
     static let tintPurple = Color(red: 0.72, green: 0.56, blue: 1.0)
     
+    static let cardCornerRadius: CGFloat = 18
+    static let headerCornerRadius: CGFloat = 20
+    static let listCardInsets = EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16)
+    
     static var background: Color { Color(uiColor: .systemGroupedBackground) }
     
     static var gradient: LinearGradient {
@@ -19,7 +23,7 @@ enum CuteTheme {
         Color.black.opacity(0.06)
     }
     
-    static func cardBackground(cornerRadius: CGFloat = 18) -> some View {
+    static func cardBackground(cornerRadius: CGFloat = cardCornerRadius) -> some View {
         RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
             .fill(Color(uiColor: .secondarySystemGroupedBackground))
             .overlay(

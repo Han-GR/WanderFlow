@@ -19,7 +19,7 @@ struct TimelineView: View {
                         HStack(alignment: .top, spacing: 12) {
                             VStack(alignment: .trailing, spacing: 2) {
                                 Text(entry.timeText)
-                                    .font(.subheadline)
+                                    .font(AppTypography.body)
                                     .monospacedDigit()
                                     .foregroundColor(.secondary)
                             }
@@ -30,7 +30,7 @@ struct TimelineView: View {
                                     Image(systemName: entry.iconName)
                                         .foregroundColor(entry.iconColor)
                                     Text(entry.title)
-                                        .font(.headline)
+                                        .font(AppTypography.sectionTitle)
                                         .foregroundColor(.primary)
                                     Spacer(minLength: 0)
                                     if let item = entry.itineraryItem {
@@ -38,7 +38,7 @@ struct TimelineView: View {
                                             onQuickAddExpense?(item)
                                         } label: {
                                             Image(systemName: "creditcard.rewards")
-                                                .font(.subheadline.weight(.semibold))
+                                                .font(AppTypography.body.weight(.semibold))
                                                 .foregroundColor(.white)
                                                 .frame(width: 34, height: 34)
                                                 .background(CuteTheme.gradient)
@@ -50,12 +50,12 @@ struct TimelineView: View {
                                 
                                 if let subtitle = entry.subtitle, !subtitle.isEmpty {
                                     Text(subtitle)
-                                        .font(.caption)
+                                        .font(AppTypography.caption)
                                         .foregroundColor(.secondary)
                                 }
                             }
                         }
-                        .listCard(insets: EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
+                        .listCard()
                         .contentShape(Rectangle())
                         .onTapGesture {
                             editingItineraryItem = entry.itineraryItem

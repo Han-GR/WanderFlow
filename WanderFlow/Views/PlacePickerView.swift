@@ -23,6 +23,7 @@ struct PlacePickerView: View {
             Section("搜索结果") {
                 if results.isEmpty && !query.isEmpty {
                     Text("无结果")
+                        .font(AppTypography.caption)
                         .foregroundColor(.secondary)
                 }
                 
@@ -37,34 +38,14 @@ struct PlacePickerView: View {
                         onSelect(item.name ?? "地点", coord)
                         dismiss()
                     } label: {
-                        VStack(alignment: .leading) {
-                            Text(item.name ?? "地点")
-                            HStack(spacing: 6) {
-                                if let user = locationManager.coordinate {
-                                    if #available(iOS 26.0, *) {
-                                        let dist = CLLocation(latitude: user.latitude, longitude: user.longitude)
-                                            .distance(from: item.location)
-                                        Text(formatDistance(dist))
-                                    } else {
-                                        if let loc = item.placemark.location {
-                                            let dist = CLLocation(latitude: user.latitude, longitude: user.longitude)
-                                                .distance(from: loc)
-                                            Text(formatDistance(dist))
-                                        }
-                                    }
-                                }
-                            }
-                            .foregroundColor(.secondary)
-                            .font(.footnote)
-                        }
+                        SearchResultRow(title: item.name ?? "地点", subtitle: nil, trailingText: distanceText(for: item))
                     }
                 }
             }
         }
         .navigationTitle("选择地点")
         .searchable(text: $query, isPresented: $isSearching, placement: .navigationBarDrawer(displayMode: .always), prompt: "搜索店铺或地点")
-        .textInputAutocapitalization(.never)
-        .autocorrectionDisabled(true)
+        .searchInputStyle()
         .onSubmit(of: .search) {
             search()
         }
@@ -72,22 +53,15 @@ struct PlacePickerView: View {
             DispatchQueue.main.async {
                 isSearching = true
             }
+            locationManager.request()
         }
         .onChange(of: query) { _, newValue in
             let trimmed = newValue.trimmingCharacters(in: .whitespacesAndNewlines)
-            searchTask?.cancel()
             guard !trimmed.isEmpty else {
                 results = []
                 return
             }
-            searchTask = Task { @MainActor in
-                try? await Task.sleep(nanoseconds: 300_000_000)
-                if Task.isCancelled { return }
-                search()
-            }
-        }
-        .onAppear {
-            locationManager.request()
+            Debounce.schedule(task: &searchTask, delayNanoseconds: 300_000_000) { search() }
         }
     }
     
@@ -111,5 +85,18 @@ struct PlacePickerView: View {
         } else {
             return String(format: "%.1fkm", meters / 1000.0)
         }
+    }
+    
+    private func distanceText(for item: MKMapItem) -> String? {
+        guard let user = locationManager.coordinate else { return nil }
+        if #available(iOS 26.0, *) {
+            let dist = CLLocation(latitude: user.latitude, longitude: user.longitude)
+                .distance(from: item.location)
+            return formatDistance(dist)
+        }
+        guard let loc = item.placemark.location else { return nil }
+        let dist = CLLocation(latitude: user.latitude, longitude: user.longitude)
+            .distance(from: loc)
+        return formatDistance(dist)
     }
 }

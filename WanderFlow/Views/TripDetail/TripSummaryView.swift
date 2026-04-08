@@ -22,7 +22,7 @@ struct TripSummaryView: View {
                 ForEach(dailyTotals, id: \.day) { row in
                     VStack(alignment: .leading, spacing: 6) {
                         Text(row.day, format: .dateTime.weekday().month().day())
-                            .font(.headline)
+                            .font(AppTypography.sectionTitle)
                         ForEach(row.totals, id: \.0) { currency, total in
                             HStack {
                                 Text(currency)
@@ -32,10 +32,10 @@ struct TripSummaryView: View {
                                     .foregroundColor(.secondary)
                                     .monospacedDigit()
                             }
-                            .font(.subheadline)
+                            .font(AppTypography.body)
                         }
                     }
-                    .listCard(insets: EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
+                    .listCard()
                 }
             }
         }

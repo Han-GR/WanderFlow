@@ -44,10 +44,10 @@ struct TripsView: View {
                                 .foregroundColor(CuteTheme.accent)
                         }
                         Text("点击 + 创建你的第一段旅程")
-                            .font(.title3.weight(.semibold))
+                            .font(AppTypography.pageTitle)
                         Text("记录行程与花销，让出行更轻松")
                             .foregroundColor(.secondary)
-                            .font(.footnote)
+                            .font(AppTypography.caption)
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else {
@@ -60,22 +60,18 @@ struct TripsView: View {
                                         .frame(width: 12, height: 12)
                                     VStack(alignment: .leading, spacing: 6) {
                                         Text(trip.title)
-                                            .font(.headline)
+                                            .font(AppTypography.sectionTitle)
                                         HStack(spacing: 6) {
                                             Image(systemName: "calendar")
                                             Text(trip.createdAt, style: .date)
                                         }
                                         .foregroundColor(.secondary)
-                                        .font(.caption)
+                                        .font(AppTypography.caption)
                                     }
                                     Spacer()
                                 }
-                                .padding(14)
-                                .background(CuteTheme.cardBackground())
                             }
-                            .listRowSeparator(.hidden)
-                            .listRowBackground(Color.clear)
-                            .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+                            .listCard(insets: EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
                             .swipeActions(edge: .trailing) {
                                 Button(role: .destructive) {
                                     tripToDelete = trip
@@ -150,7 +146,7 @@ struct TripsView: View {
                                                             .foregroundColor(style.accent)
                                                     }
                                                     Text(style.title)
-                                                        .font(.subheadline.weight(.semibold))
+                                                        .font(AppTypography.body.weight(.semibold))
                                                         .foregroundColor(.primary)
                                                     Spacer(minLength: 0)
                                                 }

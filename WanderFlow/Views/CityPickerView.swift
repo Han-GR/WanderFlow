@@ -14,7 +14,9 @@ struct CityPickerView: View {
         List {
             Section("搜索结果") {
                 if results.isEmpty && !query.isEmpty {
-                    Text("无结果").foregroundColor(.secondary)
+                    Text("无结果")
+                        .font(AppTypography.caption)
+                        .foregroundColor(.secondary)
                 }
                 
                 ForEach(results, id: \.self) { item in
@@ -30,17 +32,14 @@ struct CityPickerView: View {
                         onSelect(name, coord)
                         dismiss()
                     } label: {
-                        VStack(alignment: .leading) {
-                            Text(item.name ?? "城市")
-                        }
+                        SearchResultRow(title: item.name ?? "城市", subtitle: nil, trailingText: nil)
                     }
                 }
             }
         }
         .navigationTitle("选择城市")
         .searchable(text: $query, isPresented: $isSearching, placement: .navigationBarDrawer(displayMode: .always), prompt: "搜索城市")
-        .textInputAutocapitalization(.never)
-        .autocorrectionDisabled(true)
+        .searchInputStyle()
         .onSubmit(of: .search) {
             search()
         }
@@ -51,16 +50,11 @@ struct CityPickerView: View {
         }
         .onChange(of: query) { _, newValue in
             let trimmed = newValue.trimmingCharacters(in: .whitespacesAndNewlines)
-            searchTask?.cancel()
             guard !trimmed.isEmpty else {
                 results = []
                 return
             }
-            searchTask = Task { @MainActor in
-                try? await Task.sleep(nanoseconds: 300_000_000)
-                if Task.isCancelled { return }
-                search()
-            }
+            Debounce.schedule(task: &searchTask, delayNanoseconds: 300_000_000) { search() }
         }
     }
     

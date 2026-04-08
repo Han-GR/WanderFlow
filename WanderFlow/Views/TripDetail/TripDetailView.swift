@@ -86,26 +86,30 @@ struct TripDetailView: View {
             Button("取消", role: .cancel) {}
         }
         .sheet(isPresented: $isShowingAddMenu) {
-            TripDetailAddMenuSheet(
-                onAddItinerary: {
+            CardMenuSheet(items: [
+                CardMenuItem(title: "行程", systemImage: "mappin.and.ellipse", isDestructive: false) {
                     editingItem = nil
                     isShowingAddItinerary = true
                 },
-                onAddExpense: {
+                CardMenuItem(title: "支出", systemImage: "creditcard", isDestructive: false) {
                     quickExpenseNote = nil
                     quickExpenseOccurredAt = nil
                     quickExpenseCategory = "其他"
                     isShowingAddExpense = true
                 }
-            )
+            ])
             .presentationDetents([.height(200)])
             .presentationDragIndicator(.visible)
         }
         .sheet(isPresented: $isShowingMoreMenu) {
-            TripDetailMoreMenuSheet(
-                onEditTrip: { isShowingTripEditor = true },
-                onDeleteTrip: { isConfirmingDelete = true }
-            )
+            CardMenuSheet(items: [
+                CardMenuItem(title: "编辑旅行", systemImage: "pencil", isDestructive: false) {
+                    isShowingTripEditor = true
+                },
+                CardMenuItem(title: "删除旅行", systemImage: "trash", isDestructive: true) {
+                    isConfirmingDelete = true
+                }
+            ])
             .presentationDetents([.height(200)])
             .presentationDragIndicator(.visible)
         }
@@ -162,67 +166,4 @@ struct TripDetailView: View {
         }
     }
 }
-
-private struct TripDetailAddMenuSheet: View {
-    @Environment(\.dismiss) private var dismiss
-    
-    var onAddItinerary: () -> Void
-    var onAddExpense: () -> Void
-    
-    var body: some View {
-        VStack(spacing: 12) {
-            HStack {
-                
-            }
-            .padding(.horizontal, 20)
-            .padding(.top, 20)
-            
-            VStack(spacing: 10) {
-                TripDetailMenuRow(title: "行程", systemImage: "mappin.and.ellipse") {
-                    dismiss()
-                    DispatchQueue.main.async { onAddItinerary() }
-                }
-                TripDetailMenuRow(title: "支出", systemImage: "creditcard") {
-                    dismiss()
-                    DispatchQueue.main.async { onAddExpense() }
-                }
-            }
-            .padding(.horizontal, 16)
-            .padding(.bottom, 14)
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-    }
-}
-
-private struct TripDetailMoreMenuSheet: View {
-    @Environment(\.dismiss) private var dismiss
-    
-    var onEditTrip: () -> Void
-    var onDeleteTrip: () -> Void
-    
-    var body: some View {
-        VStack(spacing: 12) {
-            HStack {
-                
-            }
-            .padding(.horizontal, 20)
-            .padding(.top, 20)
-            
-            VStack(spacing: 10) {
-                TripDetailMenuRow(title: "编辑旅行", systemImage: "pencil") {
-                    dismiss()
-                    DispatchQueue.main.async { onEditTrip() }
-                }
-                TripDetailMenuRow(title: "删除旅行",systemImage: "trash", isDestructive: true) {
-                    dismiss()
-                    DispatchQueue.main.async { onDeleteTrip() }
-                }
-            }
-            .padding(.horizontal, 16)
-            .padding(.bottom, 14)
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-    }
-}
-
  

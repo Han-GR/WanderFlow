@@ -21,7 +21,7 @@ struct TripDetailMenuRow: View {
                 
                 VStack(alignment: .leading, spacing: 3) {
                     Text(title)
-                        .font(.headline)
+                        .font(AppTypography.sectionTitle)
                         .foregroundColor(isDestructive ? .red : .primary)
                 }
                 
@@ -31,9 +31,8 @@ struct TripDetailMenuRow: View {
                     .foregroundColor(.secondary)
             }
             .padding(14)
-            .background(CuteTheme.cardBackground(cornerRadius: 18))
+            .background(CuteTheme.cardBackground())
         }
         .buttonStyle(.plain)
     }
 }
-

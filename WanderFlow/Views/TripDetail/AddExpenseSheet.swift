@@ -102,7 +102,7 @@ struct AddExpenseSheet: View {
                     } else {
                         Text("未指定时间的支出会显示为“全天”")
                             .foregroundColor(.secondary)
-                            .font(.footnote)
+                            .font(AppTypography.caption)
                     }
                 }
                 

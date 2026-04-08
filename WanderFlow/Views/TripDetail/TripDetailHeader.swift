@@ -8,7 +8,7 @@ struct TripDetailHeader: View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(alignment: .firstTextBaseline) {
                 Text(trip.title)
-                    .font(.title3.weight(.semibold))
+                    .font(AppTypography.pageTitle)
                 Spacer()
                 Image(systemName: trip.resolvedStyle.systemImage)
                     .foregroundColor(trip.resolvedStyle.accent)
@@ -18,7 +18,7 @@ struct TripDetailHeader: View {
                 Image(systemName: "calendar")
                 Text(dateRangeText)
             }
-            .font(.caption)
+            .font(AppTypography.caption)
             .foregroundColor(.secondary)
             
             HStack(spacing: 8) {
@@ -31,7 +31,7 @@ struct TripDetailHeader: View {
             } label: {
                 HStack(spacing: 8) {
                     Image(systemName: "mappin.and.ellipse")
-                        .foregroundColor(CuteTheme.accent)
+                        .foregroundColor(trip.resolvedStyle.accent)
                     Text("默认城市")
                         .foregroundColor(.secondary)
                     Spacer()
@@ -41,14 +41,14 @@ struct TripDetailHeader: View {
                         .font(.caption.weight(.semibold))
                         .foregroundColor(.secondary)
                 }
-                .font(.subheadline)
+                .font(AppTypography.body)
                 .padding(.vertical, 6)
             }
             .buttonStyle(.plain)
             .disabled(onEditDefaultCity == nil)
         }
         .padding(14)
-        .background(CuteTheme.cardBackground(cornerRadius: 20))
+        .background(CuteTheme.cardBackground(cornerRadius: CuteTheme.headerCornerRadius))
         .padding(.horizontal, 16)
         .padding(.top, 12)
         .padding(.bottom, 8)

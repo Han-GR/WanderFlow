@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct ListCardModifier: ViewModifier {
-    var insets: EdgeInsets = EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16)
+    var insets: EdgeInsets = CuteTheme.listCardInsets
     
     func body(content: Content) -> some View {
         content
@@ -14,8 +14,7 @@ struct ListCardModifier: ViewModifier {
 }
 
 extension View {
-    func listCard(insets: EdgeInsets = EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16)) -> some View {
+    func listCard(insets: EdgeInsets = CuteTheme.listCardInsets) -> some View {
         modifier(ListCardModifier(insets: insets))
     }
 }
-

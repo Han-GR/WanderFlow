@@ -23,15 +23,15 @@ struct CurrencyPickerView: View {
                 HStack(spacing: 12) {
                     VStack(alignment: .leading, spacing: 3) {
                         Text(item.code)
-                            .font(.headline)
+                            .font(AppTypography.sectionTitle)
                         Text(item.name)
-                            .font(.caption)
+                            .font(AppTypography.caption)
                             .foregroundColor(.secondary)
                     }
                     Spacer()
                     if item.code == selectedCurrencyCode {
                         Image(systemName: "checkmark")
-                            .font(.subheadline.weight(.semibold))
+                            .font(AppTypography.body.weight(.semibold))
                             .foregroundColor(CuteTheme.accent)
                     }
                 }
@@ -43,18 +43,15 @@ struct CurrencyPickerView: View {
         }
         .navigationTitle("选择货币")
         .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "搜索货币")
+        .searchInputStyle()
         .scrollDismissesKeyboard(.never)
         .onChange(of: searchText) { _, newValue in
             let q = newValue.trimmingCharacters(in: .whitespacesAndNewlines)
-            searchTask?.cancel()
             if q.isEmpty {
                 filteredItems = allItems
                 return
             }
-            
-            searchTask = Task { @MainActor in
-                try? await Task.sleep(nanoseconds: 200_000_000)
-                if Task.isCancelled { return }
+            Debounce.schedule(task: &searchTask, delayNanoseconds: 200_000_000) {
                 filteredItems = CurrencyCatalog.filter(items: allItems, query: q)
             }
         }

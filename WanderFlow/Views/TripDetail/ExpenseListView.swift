@@ -42,12 +42,12 @@ struct ExpenseListView: View {
                     HStack {
                         VStack(alignment: .leading) {
                             Text(expense.note.isEmpty ? expense.category : expense.note)
-                                .font(.headline)
+                                .font(AppTypography.sectionTitle)
                             Text(expense.note.isEmpty ? "" : expense.category)
-                                .font(.caption2.weight(.medium))
+                                .font(AppTypography.captionEmphasis)
                                 .foregroundColor(.secondary)
                             Text(expense.occurredAt ?? expense.createdAt, format: .dateTime.month().day())
-                                .font(.caption)
+                                .font(AppTypography.caption)
                                 .foregroundColor(.secondary)
                         }
                         Spacer()
@@ -55,7 +55,7 @@ struct ExpenseListView: View {
                             .foregroundColor(.secondary)
                             .monospacedDigit()
                     }
-                    .listCard(insets: EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
+                    .listCard()
                     .contentShape(Rectangle())
                     .onTapGesture {
                         editingExpense = expense

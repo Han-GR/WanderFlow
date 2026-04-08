@@ -9,11 +9,10 @@ struct Chip: View {
             Image(systemName: systemImage)
             Text(text)
         }
-        .font(.caption.weight(.medium))
+        .font(AppTypography.captionEmphasis)
         .padding(.vertical, 6)
         .padding(.horizontal, 10)
         .background(CuteTheme.gradient)
         .clipShape(Capsule())
     }
 }
-
