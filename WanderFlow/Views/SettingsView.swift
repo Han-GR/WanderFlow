@@ -5,12 +5,12 @@ struct SettingsView: View {
     
     var body: some View {
         List {
-            Section("基础设置") {
+            Section("settings.section.basic") {
                 NavigationLink {
                     CurrencyPickerView(selectedCurrencyCode: $defaultCurrencyCode)
                 } label: {
                     HStack {
-                        Text("默认货币")
+                        Text("settings.defaultCurrency")
                         Spacer()
                         Text(defaultCurrencyCode)
                             .foregroundColor(.secondary)
@@ -18,7 +18,6 @@ struct SettingsView: View {
                 }
             }
         }
-        .navigationTitle("设置")
+        .navigationTitle("settings.title")
     }
 }
-

@@ -1,0 +1,112 @@
+"common.cancel" = "取消";
+"common.save" = "保存";
+"common.delete" = "删除";
+"common.clear" = "清除";
+"common.default" = "默认";
+"common.notSet" = "未设置";
+
+"home.empty.title" = "点击 + 创建你的第一段旅程";
+"home.empty.subtitle" = "记录行程与花销，让出行更轻松";
+"home.trips.section.year" = "%d年";
+"home.trip.untitled" = "未命名旅行";
+"home.newTrip.title" = "新建旅行";
+"home.newTrip.section.basic" = "基本信息";
+"home.newTrip.field.title" = "旅行标题";
+"home.newTrip.field.startDate" = "开始日期";
+"home.newTrip.field.endDate" = "结束日期";
+"home.newTrip.field.style" = "旅行风格";
+"home.newTrip.action.create" = "创建";
+"home.alert.deleteTrip.title" = "删除本次旅行？";
+"home.toolbar.more" = "更多";
+
+"settings.title" = "设置";
+"settings.section.basic" = "基础设置";
+"settings.defaultCurrency" = "默认货币";
+
+"tripStyle.fresh" = "城市";
+"tripStyle.warm" = "美食";
+"tripStyle.forest" = "户外";
+"tripStyle.nature" = "自然";
+"tripStyle.ocean" = "海边";
+"tripStyle.drive" = "自驾";
+"tripStyle.night" = "夜游";
+"tripStyle.relax" = "休闲";
+"tripStyle.healing" = "治愈";
+
+"tripDetail.tabs.itinerary" = "行程";
+"tripDetail.tabs.expenses" = "支出";
+"tripDetail.tabs.summary" = "汇总";
+"tripDetail.picker.viewSwitch" = "视图切换";
+"tripDetail.menu.add.itinerary" = "行程";
+"tripDetail.menu.add.expense" = "支出";
+"tripDetail.menu.more.editTrip" = "编辑旅行";
+"tripDetail.menu.more.deleteTrip" = "删除旅行";
+"tripDetail.alert.deleteTrip.title" = "删除本次旅行？";
+"tripDetail.alert.deleteTrip.confirm" = "删除旅行";
+"tripDetail.header.defaultCity" = "默认城市";
+"tripDetail.chip.itinerary" = "行程 %d";
+"tripDetail.chip.expenses" = "支出 %d";
+"tripDetail.date.notSet" = "未设置日期";
+
+"timeline.empty.title" = "还没有行程";
+"timeline.empty.subtitle" = "点击右上角 + 添加你的第一个行程安排";
+"timeline.alert.delete.title" = "删除这条行程？";
+
+"expenses.total.section" = "总支出";
+"expenses.list.section" = "明细";
+"expenses.empty.title" = "还没有支出";
+"expenses.empty.subtitle" = "点击右上角 + 记录第一笔开销";
+"expenses.alert.delete.title" = "删除这笔支出？";
+
+"summary.section.byCurrency" = "按币种总计";
+"summary.section.byDay" = "按天总计";
+
+"addItinerary.title.add" = "添加行程";
+"addItinerary.title.edit" = "编辑行程";
+"addItinerary.section" = "行程";
+"addItinerary.field.title" = "标题";
+"addItinerary.field.time" = "时间";
+"addItinerary.field.city" = "城市";
+"addItinerary.city.placeholder" = "选择城市";
+"addItinerary.field.place" = "地点";
+"addItinerary.place.placeholder" = "选择地点";
+"addItinerary.toggle.setDefaultCity" = "设为本次旅行默认城市";
+
+"addExpense.title.add" = "记一笔";
+"addExpense.title.edit" = "编辑支出";
+"addExpense.section.expense" = "支出";
+"addExpense.field.amount" = "金额";
+"addExpense.field.category" = "类别";
+"addExpense.field.note" = "备注";
+"addExpense.field.currency" = "币种";
+"addExpense.section.time" = "时间";
+"addExpense.toggle.hasTime" = "指定时间";
+"addExpense.field.occurredAt" = "发生时间";
+"addExpense.noTime.hint" = "未指定时间的支出会显示为“全天”";
+"addExpense.section.stay" = "住宿";
+"addExpense.field.stayStart" = "入住日期";
+"addExpense.field.nights" = "晚数 %d";
+
+"expense.category.food" = "餐饮";
+"expense.category.stay" = "住宿";
+"expense.category.transport" = "交通";
+"expense.category.ticket" = "门票";
+"expense.category.shopping" = "购物";
+"expense.category.other" = "其他";
+
+"cityPicker.title" = "选择城市";
+"cityPicker.search.prompt" = "搜索城市";
+"cityPicker.section.results" = "搜索结果";
+"cityPicker.noResults" = "无结果";
+"cityPicker.unknownCity" = "未知城市";
+"cityPicker.fallbackCity" = "城市";
+
+"placePicker.title" = "选择地点";
+"placePicker.search.prompt" = "搜索店铺或地点";
+"placePicker.section.results" = "搜索结果";
+"placePicker.noResults" = "无结果";
+"placePicker.unknownPlace" = "未知地点";
+"placePicker.fallbackPlace" = "地点";
+
+"currencyPicker.title" = "选择货币";
+"currencyPicker.search.prompt" = "搜索货币";

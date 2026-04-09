@@ -65,7 +65,7 @@ struct TimelineView: View {
                                 Button(role: .destructive) {
                                     itineraryToDelete = itinerary
                                 } label: {
-                                    Label("删除", systemImage: "trash")
+                                    Label("common.delete", systemImage: "trash")
                                 }
                             }
                         }
@@ -75,13 +75,13 @@ struct TimelineView: View {
             
             if trip.itinerary.isEmpty {
                 Section {
-                    ContentUnavailableView("还没有行程", systemImage: "calendar.badge.plus", description: Text("点击右上角 + 添加你的第一个行程安排"))
+                    ContentUnavailableView("timeline.empty.title", systemImage: "calendar.badge.plus", description: Text("timeline.empty.subtitle"))
                 }
             }
         }
         .cuteListStyle()
-        .alert("删除这条行程？", isPresented: Binding(get: { itineraryToDelete != nil }, set: { if !$0 { itineraryToDelete = nil } })) {
-            Button("删除", role: .destructive) {
+        .alert("timeline.alert.delete.title", isPresented: Binding(get: { itineraryToDelete != nil }, set: { if !$0 { itineraryToDelete = nil } })) {
+            Button("common.delete", role: .destructive) {
                 if let itineraryToDelete {
                     modelContext.delete(itineraryToDelete)
                     if let idx = trip.itinerary.firstIndex(where: { $0.id == itineraryToDelete.id }) {
@@ -91,7 +91,7 @@ struct TimelineView: View {
                 }
                 itineraryToDelete = nil
             }
-            Button("取消", role: .cancel) {
+            Button("common.cancel", role: .cancel) {
                 itineraryToDelete = nil
             }
         }

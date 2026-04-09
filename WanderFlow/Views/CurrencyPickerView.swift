@@ -41,8 +41,8 @@ struct CurrencyPickerView: View {
                 }
             }
         }
-        .navigationTitle("选择货币")
-        .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "搜索货币")
+        .navigationTitle("currencyPicker.title")
+        .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "currencyPicker.search.prompt")
         .searchInputStyle()
         .scrollDismissesKeyboard(.never)
         .onChange(of: searchText) { _, newValue in

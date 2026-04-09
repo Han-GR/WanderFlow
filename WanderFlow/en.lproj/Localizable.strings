@@ -1,0 +1,112 @@
+"common.cancel" = "Cancel";
+"common.save" = "Save";
+"common.delete" = "Delete";
+"common.clear" = "Clear";
+"common.default" = "Default";
+"common.notSet" = "Not set";
+
+"home.empty.title" = "Tap + to create your first trip";
+"home.empty.subtitle" = "Track itineraries and expenses with ease";
+"home.trips.section.year" = "%d";
+"home.trip.untitled" = "Untitled Trip";
+"home.newTrip.title" = "New Trip";
+"home.newTrip.section.basic" = "Basics";
+"home.newTrip.field.title" = "Trip Title";
+"home.newTrip.field.startDate" = "Start Date";
+"home.newTrip.field.endDate" = "End Date";
+"home.newTrip.field.style" = "Trip Style";
+"home.newTrip.action.create" = "Create";
+"home.alert.deleteTrip.title" = "Delete this trip?";
+"home.toolbar.more" = "More";
+
+"settings.title" = "Settings";
+"settings.section.basic" = "General";
+"settings.defaultCurrency" = "Default Currency";
+
+"tripStyle.fresh" = "City";
+"tripStyle.warm" = "Food";
+"tripStyle.forest" = "Outdoor";
+"tripStyle.nature" = "Nature";
+"tripStyle.ocean" = "Beach";
+"tripStyle.drive" = "Road Trip";
+"tripStyle.night" = "Night";
+"tripStyle.relax" = "Relax";
+"tripStyle.healing" = "Healing";
+
+"tripDetail.tabs.itinerary" = "Itinerary";
+"tripDetail.tabs.expenses" = "Expenses";
+"tripDetail.tabs.summary" = "Summary";
+"tripDetail.picker.viewSwitch" = "View Switch";
+"tripDetail.menu.add.itinerary" = "Itinerary";
+"tripDetail.menu.add.expense" = "Expense";
+"tripDetail.menu.more.editTrip" = "Edit Trip";
+"tripDetail.menu.more.deleteTrip" = "Delete Trip";
+"tripDetail.alert.deleteTrip.title" = "Delete this trip?";
+"tripDetail.alert.deleteTrip.confirm" = "Delete Trip";
+"tripDetail.header.defaultCity" = "Default City";
+"tripDetail.chip.itinerary" = "Itinerary %d";
+"tripDetail.chip.expenses" = "Expenses %d";
+"tripDetail.date.notSet" = "Dates not set";
+
+"timeline.empty.title" = "No itinerary yet";
+"timeline.empty.subtitle" = "Tap + in the top right to add your first plan";
+"timeline.alert.delete.title" = "Delete this itinerary item?";
+
+"expenses.total.section" = "Total";
+"expenses.list.section" = "Items";
+"expenses.empty.title" = "No expenses yet";
+"expenses.empty.subtitle" = "Tap + in the top right to record your first expense";
+"expenses.alert.delete.title" = "Delete this expense?";
+
+"summary.section.byCurrency" = "By Currency";
+"summary.section.byDay" = "By Day";
+
+"addItinerary.title.add" = "Add Itinerary";
+"addItinerary.title.edit" = "Edit Itinerary";
+"addItinerary.section" = "Itinerary";
+"addItinerary.field.title" = "Title";
+"addItinerary.field.time" = "Time";
+"addItinerary.field.city" = "City";
+"addItinerary.city.placeholder" = "Choose a city";
+"addItinerary.field.place" = "Place";
+"addItinerary.place.placeholder" = "Choose a place";
+"addItinerary.toggle.setDefaultCity" = "Set as default city for this trip";
+
+"addExpense.title.add" = "Add Expense";
+"addExpense.title.edit" = "Edit Expense";
+"addExpense.section.expense" = "Expense";
+"addExpense.field.amount" = "Amount";
+"addExpense.field.category" = "Category";
+"addExpense.field.note" = "Note";
+"addExpense.field.currency" = "Currency";
+"addExpense.section.time" = "Time";
+"addExpense.toggle.hasTime" = "Specify time";
+"addExpense.field.occurredAt" = "Occurred At";
+"addExpense.noTime.hint" = "Expenses without a time will be shown as All-day";
+"addExpense.section.stay" = "Stay";
+"addExpense.field.stayStart" = "Check-in Date";
+"addExpense.field.nights" = "Nights %d";
+
+"expense.category.food" = "Food";
+"expense.category.stay" = "Stay";
+"expense.category.transport" = "Transport";
+"expense.category.ticket" = "Tickets";
+"expense.category.shopping" = "Shopping";
+"expense.category.other" = "Other";
+
+"cityPicker.title" = "Choose City";
+"cityPicker.search.prompt" = "Search city";
+"cityPicker.section.results" = "Results";
+"cityPicker.noResults" = "No results";
+"cityPicker.unknownCity" = "Unknown City";
+"cityPicker.fallbackCity" = "City";
+
+"placePicker.title" = "Choose Place";
+"placePicker.search.prompt" = "Search shops or places";
+"placePicker.section.results" = "Results";
+"placePicker.noResults" = "No results";
+"placePicker.unknownPlace" = "Unknown Place";
+"placePicker.fallbackPlace" = "Place";
+
+"currencyPicker.title" = "Choose Currency";
+"currencyPicker.search.prompt" = "Search currency";

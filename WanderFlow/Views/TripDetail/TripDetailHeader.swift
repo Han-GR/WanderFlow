@@ -22,8 +22,8 @@ struct TripDetailHeader: View {
             .foregroundColor(.secondary)
             
             HStack(spacing: 8) {
-                Chip(text: "行程 \(trip.itinerary.count)", systemImage: "list.bullet", background: AnyShapeStyle(trip.resolvedStyle.gradient))
-                Chip(text: "支出 \(trip.expenses.count)", systemImage: "creditcard", background: AnyShapeStyle(trip.resolvedStyle.gradient))
+                Chip(text: L10n.format("tripDetail.chip.itinerary", trip.itinerary.count), systemImage: "list.bullet", background: AnyShapeStyle(trip.resolvedStyle.gradient))
+                Chip(text: L10n.format("tripDetail.chip.expenses", trip.expenses.count), systemImage: "creditcard", background: AnyShapeStyle(trip.resolvedStyle.gradient))
             }
             
             Button {
@@ -32,10 +32,10 @@ struct TripDetailHeader: View {
                 HStack(spacing: 8) {
                     Image(systemName: "mappin.and.ellipse")
                         .foregroundColor(trip.resolvedStyle.accent)
-                    Text("默认城市")
+                    Text("tripDetail.header.defaultCity")
                         .foregroundColor(.secondary)
                     Spacer()
-                    Text(trip.defaultCityName ?? "未设置")
+                    Text(trip.defaultCityName ?? NSLocalizedString("common.notSet", comment: ""))
                         .foregroundColor(trip.defaultCityName == nil ? .secondary : .primary)
                     Image(systemName: "chevron.right")
                         .font(.caption.weight(.semibold))
@@ -56,7 +56,7 @@ struct TripDetailHeader: View {
     
     private var dateRangeText: String {
         guard let start = trip.startDate, let end = trip.endDate else {
-            return "未设置日期"
+            return NSLocalizedString("tripDetail.date.notSet", comment: "")
         }
         return "\(start.formatted(date: .abbreviated, time: .omitted)) · \(end.formatted(date: .abbreviated, time: .omitted))"
     }

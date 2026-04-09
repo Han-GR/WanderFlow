@@ -12,9 +12,9 @@ struct CityPickerView: View {
     
     var body: some View {
         List {
-            Section("搜索结果") {
+            Section("cityPicker.section.results") {
                 if results.isEmpty && !query.isEmpty {
-                    Text("无结果")
+                    Text("cityPicker.noResults")
                         .font(AppTypography.caption)
                         .foregroundColor(.secondary)
                 }
@@ -28,17 +28,17 @@ struct CityPickerView: View {
                             coord = item.placemark.coordinate
                         }
                         
-                        let name = item.name ?? "未知城市"
+                        let name = item.name ?? NSLocalizedString("cityPicker.unknownCity", comment: "")
                         onSelect(name, coord)
                         dismiss()
                     } label: {
-                        SearchResultRow(title: item.name ?? "城市", subtitle: nil, trailingText: nil)
+                        SearchResultRow(title: item.name ?? NSLocalizedString("cityPicker.fallbackCity", comment: ""), subtitle: nil, trailingText: nil)
                     }
                 }
             }
         }
-        .navigationTitle("选择城市")
-        .searchable(text: $query, isPresented: $isSearching, placement: .navigationBarDrawer(displayMode: .always), prompt: "搜索城市")
+        .navigationTitle("cityPicker.title")
+        .searchable(text: $query, isPresented: $isSearching, placement: .navigationBarDrawer(displayMode: .always), prompt: "cityPicker.search.prompt")
         .searchInputStyle()
         .onSubmit(of: .search) {
             search()

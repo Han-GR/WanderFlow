@@ -67,27 +67,27 @@ struct AddExpenseSheet: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section("支出") {
-                    TextField("金额", text: $amountText)
+                Section("addExpense.section.expense") {
+                    TextField("addExpense.field.amount", text: $amountText)
                         .keyboardType(.decimalPad)
-                    Picker("类别", selection: $category) {
-                        Text("餐饮").tag("餐饮")
-                        Text("住宿").tag("住宿")
-                        Text("交通").tag("交通")
-                        Text("门票").tag("门票")
-                        Text("购物").tag("购物")
-                        Text("其他").tag("其他")
+                    Picker("addExpense.field.category", selection: $category) {
+                        Text("expense.category.food").tag("餐饮")
+                        Text("expense.category.stay").tag("住宿")
+                        Text("expense.category.transport").tag("交通")
+                        Text("expense.category.ticket").tag("门票")
+                        Text("expense.category.shopping").tag("购物")
+                        Text("expense.category.other").tag("其他")
                     }
                     .tint(trip.resolvedStyle.accent)
-                    TextField("备注", text: $note)
+                    TextField("addExpense.field.note", text: $note)
                     NavigationLink {
                         CurrencyPickerView(selectedCurrencyCode: $currency)
                     } label: {
                         HStack {
-                            Text("币种")
+                            Text("addExpense.field.currency")
                             Spacer()
                             if currency == defaultCurrencyCode {
-                                Text("默认")
+                                Text("common.default")
                                     .foregroundColor(.secondary)
                             }
                             Text(currency)
@@ -96,32 +96,32 @@ struct AddExpenseSheet: View {
                     }
                 }
                 
-                Section("时间") {
-                    Toggle("指定时间", isOn: $hasTime).tint(trip.resolvedStyle.accent)
+                Section("addExpense.section.time") {
+                    Toggle("addExpense.toggle.hasTime", isOn: $hasTime).tint(trip.resolvedStyle.accent)
                     if hasTime {
-                        DatePicker("发生时间", selection: $occurredAt, displayedComponents: [.date, .hourAndMinute])
+                        DatePicker("addExpense.field.occurredAt", selection: $occurredAt, displayedComponents: [.date, .hourAndMinute])
                     } else {
-                        Text("未指定时间的支出会显示为“全天”")
+                        Text("addExpense.noTime.hint")
                             .foregroundColor(.secondary)
                             .font(AppTypography.caption)
                     }
                 }
                 
                 if category == "住宿" {
-                    Section("住宿") {
-                        DatePicker("入住日期", selection: $stayStartDate, displayedComponents: .date)
-                        Stepper("晚数 \(nights)", value: $nights, in: 1...60)
+                    Section("addExpense.section.stay") {
+                        DatePicker("addExpense.field.stayStart", selection: $stayStartDate, displayedComponents: .date)
+                        Stepper(L10n.format("addExpense.field.nights", nights), value: $nights, in: 1...60)
                     }
                 }
             }
-            .navigationTitle(expenseToEdit == nil ? "记一笔" : "编辑支出")
+            .navigationTitle(expenseToEdit == nil ? NSLocalizedString("addExpense.title.add", comment: "") : NSLocalizedString("addExpense.title.edit", comment: ""))
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("取消") { dismiss() }
+                    Button("common.cancel") { dismiss() }
                         .tint(trip.resolvedStyle.accent)
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("保存") {
+                    Button("common.save") {
                         guard let amount = Double(amountText) else { return }
                         
                         let occurred: Date? = hasTime ? occurredAt : nil

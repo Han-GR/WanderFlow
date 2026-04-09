@@ -7,7 +7,7 @@ struct TripSummaryView: View {
     
     var body: some View {
         List {
-            Section("按币种总计") {
+            Section("summary.section.byCurrency") {
                 ForEach(currencyTotals, id: \.0) { currency, total in
                     HStack {
                         Text(currency)
@@ -18,7 +18,7 @@ struct TripSummaryView: View {
                 }
             }
             
-            Section("按天总计") {
+            Section("summary.section.byDay") {
                 ForEach(dailyTotals, id: \.day) { row in
                     VStack(alignment: .leading, spacing: 6) {
                         Text(row.day, format: .dateTime.weekday().month().day())

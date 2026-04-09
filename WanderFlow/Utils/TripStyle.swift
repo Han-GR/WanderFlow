@@ -15,15 +15,15 @@ enum TripStyle: String, CaseIterable, Identifiable {
     
     var title: String {
         switch self {
-        case .fresh: return "城市"
-        case .warm: return "美食"
-        case .forest: return "户外"
-        case .nature: return "自然"
-        case .ocean: return "海边"
-        case .drive: return "自驾"
-        case .night: return "夜游"
-        case .relax: return "休闲"
-        case .healing: return "治愈"
+        case .fresh: return NSLocalizedString("tripStyle.fresh", comment: "")
+        case .warm: return NSLocalizedString("tripStyle.warm", comment: "")
+        case .forest: return NSLocalizedString("tripStyle.forest", comment: "")
+        case .nature: return NSLocalizedString("tripStyle.nature", comment: "")
+        case .ocean: return NSLocalizedString("tripStyle.ocean", comment: "")
+        case .drive: return NSLocalizedString("tripStyle.drive", comment: "")
+        case .night: return NSLocalizedString("tripStyle.night", comment: "")
+        case .relax: return NSLocalizedString("tripStyle.relax", comment: "")
+        case .healing: return NSLocalizedString("tripStyle.healing", comment: "")
         }
     }
     

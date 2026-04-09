@@ -51,18 +51,18 @@ struct AddItineraryItemSheet: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section("行程") {
-                    TextField("标题", text: $title)
+                Section("addItinerary.section") {
+                    TextField("addItinerary.field.title", text: $title)
                         .focused($focusedField, equals: .title)
-                    DatePicker("时间", selection: $date, displayedComponents: [.date, .hourAndMinute])
+                    DatePicker("addItinerary.field.time", selection: $date, displayedComponents: [.date, .hourAndMinute])
                     Button {
                         openCityPicker()
                     } label: {
                         HStack {
-                            Text("城市")
+                            Text("addItinerary.field.city")
                                 .foregroundStyle(.primary)
                             Spacer()
-                            Text(cityName ?? "选择城市")
+                            Text(cityName ?? NSLocalizedString("addItinerary.city.placeholder", comment: ""))
                                 .foregroundColor(cityName == nil ? .secondary : .primary)
                             Image(systemName: "chevron.right")
                                 .font(.caption.weight(.semibold))
@@ -72,17 +72,17 @@ struct AddItineraryItemSheet: View {
                     .buttonStyle(.plain)
                     
                     if let cityName, let defaultCity = trip.defaultCityName, cityName != defaultCity {
-                        Toggle("设为本次旅行默认城市", isOn: $setAsTripDefaultCity)
+                        Toggle("addItinerary.toggle.setDefaultCity", isOn: $setAsTripDefaultCity)
                     }
                     
                     Button {
                         openPlacePicker()
                     } label: {
                         HStack {
-                            Text("地点")
+                            Text("addItinerary.field.place")
                                 .foregroundStyle(.primary)
                             Spacer()
-                            Text(placeName ?? "选择地点")
+                            Text(placeName ?? NSLocalizedString("addItinerary.place.placeholder", comment: ""))
                                 .foregroundColor(placeName == nil ? .secondary : .primary)
                             Image(systemName: "chevron.right")
                                 .font(.caption.weight(.semibold))
@@ -106,14 +106,14 @@ struct AddItineraryItemSheet: View {
                     }
                 }
             }
-            .navigationTitle(itemToEdit == nil ? "添加行程" : "编辑行程")
+            .navigationTitle(itemToEdit == nil ? NSLocalizedString("addItinerary.title.add", comment: "") : NSLocalizedString("addItinerary.title.edit", comment: ""))
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("取消") { dismiss() }
+                    Button("common.cancel") { dismiss() }
                         .tint(trip.resolvedStyle.accent)
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("保存") {
+                    Button("common.save") {
                         guard !title.isEmpty else { return }
                         let lat = coordinate?.latitude
                         let lon = coordinate?.longitude

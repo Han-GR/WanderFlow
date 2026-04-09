@@ -68,9 +68,9 @@ struct TripsView: View {
                                 .font(.system(size: 30, weight: .semibold))
                                 .foregroundColor(CuteTheme.accent)
                         }
-                        Text("点击 + 创建你的第一段旅程")
+                        Text("home.empty.title")
                             .font(AppTypography.pageTitle)
-                        Text("记录行程与花销，让出行更轻松")
+                        Text("home.empty.subtitle")
                             .foregroundColor(.secondary)
                             .font(AppTypography.caption)
                     }
@@ -78,7 +78,7 @@ struct TripsView: View {
                 } else {
                     List {
                         ForEach(yearSections) { section in
-                            Section(header: Text(verbatim: "\(section.year)年")) {
+                            Section(header: Text(verbatim: L10n.format("home.trips.section.year", section.year))) {
                                 ForEach(section.trips) { trip in
                                     NavigationLink(value: trip) {
                                         HStack(spacing: 12) {
@@ -136,27 +136,27 @@ struct TripsView: View {
             .navigationDestination(isPresented: $isShowingSettings) {
                 SettingsView()
             }
-            .alert("删除本次旅行？", isPresented: Binding(get: { tripToDelete != nil }, set: { if !$0 { tripToDelete = nil } })) {
-                Button("删除旅行", role: .destructive) {
+            .alert("home.alert.deleteTrip.title", isPresented: Binding(get: { tripToDelete != nil }, set: { if !$0 { tripToDelete = nil } })) {
+                Button("common.delete", role: .destructive) {
                     if let tripToDelete {
                         modelContext.delete(tripToDelete)
                         try? modelContext.save()
                     }
                     tripToDelete = nil
                 }
-                Button("取消", role: .cancel) {
+                Button("common.cancel", role: .cancel) {
                     tripToDelete = nil
                 }
             }
             .sheet(isPresented: $isPresentingNewTrip) {
                 NavigationStack {
                     Form {
-                        Section("基本信息") {
-                            TextField("旅行标题", text: $newTitle)
-                            DatePicker("开始日期", selection: $newStart, displayedComponents: .date)
-                            DatePicker("结束日期", selection: $newEnd, displayedComponents: .date)
+                        Section("home.newTrip.section.basic") {
+                            TextField("home.newTrip.field.title", text: $newTitle)
+                            DatePicker("home.newTrip.field.startDate", selection: $newStart, displayedComponents: .date)
+                            DatePicker("home.newTrip.field.endDate", selection: $newEnd, displayedComponents: .date)
                             VStack(alignment: .leading, spacing: 10) {
-                                Text("旅行风格")
+                                Text("home.newTrip.field.style")
                                 ScrollView(.horizontal, showsIndicators: false) {
                                     HStack(spacing: 10) {
                                         ForEach(TripStyle.allCases) { style in
@@ -194,14 +194,14 @@ struct TripsView: View {
                             }
                         }
                     }
-                    .navigationTitle("新建旅行")
+                    .navigationTitle("home.newTrip.title")
                     .toolbar {
                         ToolbarItem(placement: .cancellationAction) {
-                            Button("取消") { isPresentingNewTrip = false }
+                            Button("common.cancel") { isPresentingNewTrip = false }
                         }
                         ToolbarItem(placement: .confirmationAction) {
-                            Button("创建") {
-                                let trip = Trip(title: newTitle.isEmpty ? "未命名旅行" : newTitle, startDate: newStart, endDate: newEnd, coverColorHex: newStyle.legacyCoverHex, styleRaw: newStyle.rawValue)
+                            Button("home.newTrip.action.create") {
+                                let trip = Trip(title: newTitle.isEmpty ? NSLocalizedString("home.trip.untitled", comment: "") : newTitle, startDate: newStart, endDate: newEnd, coverColorHex: newStyle.legacyCoverHex, styleRaw: newStyle.rawValue)
                                 modelContext.insert(trip)
                                 try? modelContext.save()
                                 newTitle = ""

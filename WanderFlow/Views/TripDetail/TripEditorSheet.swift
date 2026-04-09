@@ -15,25 +15,25 @@ struct TripEditorSheet: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section("基本信息") {
-                    TextField("旅行标题", text: $title)
-                    DatePicker("开始日期", selection: $startDate, displayedComponents: .date)
-                    DatePicker("结束日期", selection: $endDate, displayedComponents: .date)
-                    Picker("旅行风格", selection: $style) {
+                Section("home.newTrip.section.basic") {
+                    TextField("home.newTrip.field.title", text: $title)
+                    DatePicker("home.newTrip.field.startDate", selection: $startDate, displayedComponents: .date)
+                    DatePicker("home.newTrip.field.endDate", selection: $endDate, displayedComponents: .date)
+                    Picker("home.newTrip.field.style", selection: $style) {
                         ForEach(TripStyle.allCases) { s in
                             Text(s.title).tag(s)
                         }
                     }.tint(trip.resolvedStyle.accent)
                 }
             }
-            .navigationTitle("编辑旅行")
+            .navigationTitle("tripDetail.menu.more.editTrip")
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("取消") { dismiss() }
+                    Button("common.cancel") { dismiss() }
                         .tint(trip.resolvedStyle.accent)
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("保存") {
+                    Button("common.save") {
                         trip.title = title.isEmpty ? trip.title : title
                         trip.startDate = startDate
                         trip.endDate = endDate

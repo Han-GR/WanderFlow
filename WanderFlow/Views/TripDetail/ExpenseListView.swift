@@ -25,7 +25,7 @@ struct ExpenseListView: View {
     var body: some View {
         List {
             if !currencyTotals.isEmpty {
-                Section("总支出") {
+                Section("expenses.total.section") {
                     ForEach(currencyTotals, id: \.0) { currency, amount in
                         HStack {
                             Text(currency)
@@ -37,13 +37,13 @@ struct ExpenseListView: View {
                 }
             }
             
-            Section("明细") {
+            Section("expenses.list.section") {
                 ForEach(sortedExpenses) { expense in
                     HStack {
                         VStack(alignment: .leading) {
-                            Text(expense.note.isEmpty ? expense.category : expense.note)
+                            Text(expense.note.isEmpty ? ExpenseCategoryLocalization.name(for: expense.category) : expense.note)
                                 .font(AppTypography.sectionTitle)
-                            Text(expense.note.isEmpty ? "" : expense.category)
+                            Text(expense.note.isEmpty ? "" : ExpenseCategoryLocalization.name(for: expense.category))
                                 .font(AppTypography.captionEmphasis)
                                 .foregroundColor(.secondary)
                             Text(expense.occurredAt ?? expense.createdAt, format: .dateTime.month().day())
@@ -64,7 +64,7 @@ struct ExpenseListView: View {
                         Button(role: .destructive) {
                             expenseToDelete = expense
                         } label: {
-                            Label("删除", systemImage: "trash")
+                            Label("common.delete", systemImage: "trash")
                         }
                     }
                 }
@@ -72,13 +72,13 @@ struct ExpenseListView: View {
             
             if trip.expenses.isEmpty {
                 Section {
-                    ContentUnavailableView("还没有支出", systemImage: "creditcard", description: Text("点击右上角 + 记录第一笔开销"))
+                    ContentUnavailableView("expenses.empty.title", systemImage: "creditcard", description: Text("expenses.empty.subtitle"))
                 }
             }
         }
         .cuteListStyle()
-        .alert("删除这笔支出？", isPresented: Binding(get: { expenseToDelete != nil }, set: { if !$0 { expenseToDelete = nil } })) {
-            Button("删除", role: .destructive) {
+        .alert("expenses.alert.delete.title", isPresented: Binding(get: { expenseToDelete != nil }, set: { if !$0 { expenseToDelete = nil } })) {
+            Button("common.delete", role: .destructive) {
                 if let expenseToDelete {
                     modelContext.delete(expenseToDelete)
                     if let idx = trip.expenses.firstIndex(where: { $0.id == expenseToDelete.id }) {
@@ -88,7 +88,7 @@ struct ExpenseListView: View {
                 }
                 expenseToDelete = nil
             }
-            Button("取消", role: .cancel) {
+            Button("common.cancel", role: .cancel) {
                 expenseToDelete = nil
             }
         }

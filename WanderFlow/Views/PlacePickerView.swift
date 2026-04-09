@@ -20,9 +20,9 @@ struct PlacePickerView: View {
     
     var body: some View {
         List {
-            Section("搜索结果") {
+            Section("placePicker.section.results") {
                 if results.isEmpty && !query.isEmpty {
-                    Text("无结果")
+                    Text("placePicker.noResults")
                         .font(AppTypography.caption)
                         .foregroundColor(.secondary)
                 }
@@ -35,16 +35,16 @@ struct PlacePickerView: View {
                         } else {
                             coord = item.placemark.coordinate
                         }
-                        onSelect(item.name ?? "地点", coord)
+                        onSelect(item.name ?? NSLocalizedString("placePicker.unknownPlace", comment: ""), coord)
                         dismiss()
                     } label: {
-                        SearchResultRow(title: item.name ?? "地点", subtitle: nil, trailingText: distanceText(for: item))
+                        SearchResultRow(title: item.name ?? NSLocalizedString("placePicker.fallbackPlace", comment: ""), subtitle: nil, trailingText: distanceText(for: item))
                     }
                 }
             }
         }
-        .navigationTitle("选择地点")
-        .searchable(text: $query, isPresented: $isSearching, placement: .navigationBarDrawer(displayMode: .always), prompt: "搜索店铺或地点")
+        .navigationTitle("placePicker.title")
+        .searchable(text: $query, isPresented: $isSearching, placement: .navigationBarDrawer(displayMode: .always), prompt: "placePicker.search.prompt")
         .searchInputStyle()
         .onSubmit(of: .search) {
             search()

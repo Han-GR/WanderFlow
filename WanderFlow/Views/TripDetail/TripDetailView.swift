@@ -24,9 +24,17 @@ struct TripDetailView: View {
     
     
     enum DetailTab: String, CaseIterable {
-        case itinerary = "行程"
-        case expenses = "支出"
-        case summary = "汇总"
+        case itinerary
+        case expenses
+        case summary
+        
+        var titleKey: LocalizedStringKey {
+            switch self {
+            case .itinerary: return "tripDetail.tabs.itinerary"
+            case .expenses: return "tripDetail.tabs.expenses"
+            case .summary: return "tripDetail.tabs.summary"
+            }
+        }
     }
     
     var body: some View {
@@ -34,9 +42,9 @@ struct TripDetailView: View {
             TripDetailHeader(trip: trip, onEditDefaultCity: {
                 isShowingDefaultCityPicker = true
             })
-            Picker("视图切换", selection: $selection) {
+            Picker("tripDetail.picker.viewSwitch", selection: $selection) {
                 ForEach(DetailTab.allCases, id: \.self) { tab in
-                    Text(tab.rawValue).tag(tab)
+                    Text(tab.titleKey).tag(tab)
                 }
             }
             .pickerStyle(.segmented)
@@ -76,21 +84,21 @@ struct TripDetailView: View {
                 .tint(trip.resolvedStyle.accent)
             }
         }
-        .alert("删除本次旅行？", isPresented: $isConfirmingDelete) {
-            Button("删除旅行", role: .destructive) {
+        .alert("tripDetail.alert.deleteTrip.title", isPresented: $isConfirmingDelete) {
+            Button("tripDetail.alert.deleteTrip.confirm", role: .destructive) {
                 modelContext.delete(trip)
                 try? modelContext.save()
                 dismiss()
             }
-            Button("取消", role: .cancel) {}
+            Button("common.cancel", role: .cancel) {}
         }
         .sheet(isPresented: $isShowingAddMenu) {
             CardMenuSheet(items: [
-                CardMenuItem(title: "行程", systemImage: "mappin.and.ellipse", isDestructive: false) {
+                CardMenuItem(title: NSLocalizedString("tripDetail.menu.add.itinerary", comment: ""), systemImage: "mappin.and.ellipse", isDestructive: false) {
                     editingItem = nil
                     isShowingAddItinerary = true
                 },
-                CardMenuItem(title: "支出", systemImage: "creditcard", isDestructive: false) {
+                CardMenuItem(title: NSLocalizedString("tripDetail.menu.add.expense", comment: ""), systemImage: "creditcard", isDestructive: false) {
                     quickExpenseNote = nil
                     quickExpenseOccurredAt = nil
                     quickExpenseCategory = "其他"
@@ -102,10 +110,10 @@ struct TripDetailView: View {
         }
         .sheet(isPresented: $isShowingMoreMenu) {
             CardMenuSheet(items: [
-                CardMenuItem(title: "编辑旅行", systemImage: "pencil", isDestructive: false) {
+                CardMenuItem(title: NSLocalizedString("tripDetail.menu.more.editTrip", comment: ""), systemImage: "pencil", isDestructive: false) {
                     isShowingTripEditor = true
                 },
-                CardMenuItem(title: "删除旅行", systemImage: "trash", isDestructive: true) {
+                CardMenuItem(title: NSLocalizedString("tripDetail.menu.more.deleteTrip", comment: ""), systemImage: "trash", isDestructive: true) {
                     isConfirmingDelete = true
                 }
             ], accent: trip.resolvedStyle.accent, iconBackground: trip.resolvedStyle.gradient)
@@ -124,7 +132,7 @@ struct TripDetailView: View {
                 .toolbar {
                     if trip.defaultCityName != nil {
                         ToolbarItem(placement: .topBarTrailing) {
-                            Button("清除") {
+                            Button("common.clear") {
                                 trip.defaultCityName = nil
                                 trip.defaultCityLatitude = nil
                                 trip.defaultCityLongitude = nil
