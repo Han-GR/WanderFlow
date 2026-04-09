@@ -155,43 +155,21 @@ struct TripsView: View {
                             TextField("home.newTrip.field.title", text: $newTitle)
                             DatePicker("home.newTrip.field.startDate", selection: $newStart, displayedComponents: .date)
                             DatePicker("home.newTrip.field.endDate", selection: $newEnd, displayedComponents: .date)
-                            VStack(alignment: .leading, spacing: 10) {
-                                Text("home.newTrip.field.style")
-                                ScrollView(.horizontal, showsIndicators: false) {
-                                    HStack(spacing: 10) {
-                                        ForEach(TripStyle.allCases) { style in
-                                            Button {
-                                                newStyle = style
-                                            } label: {
-                                                HStack(spacing: 10) {
-                                                    ZStack {
-                                                        Circle()
-                                                            .fill(style.gradient)
-                                                            .frame(width: 34, height: 34)
-                                                        Image(systemName: style.systemImage)
-                                                            .font(.subheadline.weight(.semibold))
-                                                            .foregroundColor(style.accent)
-                                                    }
-                                                    Text(style.title)
-                                                        .font(AppTypography.body.weight(.semibold))
-                                                        .foregroundColor(.primary)
-                                                    Spacer(minLength: 0)
-                                                }
-                                                .padding(.horizontal, 12)
-                                                .padding(.vertical, 10)
-                                                .frame(width: 120)
-                                                .background(CuteTheme.cardBackground(cornerRadius: 16))
-                                                .overlay(
-                                                    RoundedRectangle(cornerRadius: 16, style: .continuous)
-                                                        .stroke(newStyle == style ? style.accent.opacity(0.55) : Color.clear, lineWidth: 2)
-                                                )
-                                            }
-                                            .buttonStyle(.plain)
-                                        }
+                            Picker("home.newTrip.field.style", selection: $newStyle) {
+                                ForEach(TripStyle.allCases) { style in
+                                    Label {
+                                        Text(style.title)
+                                            .lineLimit(1)
+                                            .truncationMode(.tail)
+                                    } icon: {
+                                        Image(systemName: style.systemImage)
+                                            .foregroundStyle(style.accent)
                                     }
-                                    .padding(.vertical, 2)
+                                    .tag(style)
                                 }
                             }
+                            .pickerStyle(.navigationLink)
+                            .tint(newStyle.accent)
                         }
                     }
                     .navigationTitle("home.newTrip.title")

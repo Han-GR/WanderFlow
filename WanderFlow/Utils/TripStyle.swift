@@ -48,7 +48,7 @@ enum TripStyle: String, CaseIterable, Identifiable {
         case .forest: return Color(hex: "#B14A3A")
         case .nature: return Color(hex: "#34C759")
         case .ocean: return Color(hex: "#00B8D9")
-        case .drive: return Color(hex: "#7C5CFC")
+        case .drive: return Color(hex: "#FF6A3D")
         case .night: return Color(hex: "#6C63FF")
         case .relax: return Color(hex: "#A2845E")
         case .healing: return Color(hex: "#FF6FAE")
@@ -70,7 +70,7 @@ enum TripStyle: String, CaseIterable, Identifiable {
         case .ocean:
             return LinearGradient(colors: [Color(hex: "#00B8D9").opacity(0.22), Color(hex: "#4DA3FF").opacity(0.18), Color(hex: "#2ECC71").opacity(0.12)], startPoint: .topLeading, endPoint: .bottomTrailing)
         case .drive:
-            return LinearGradient(colors: [Color(hex: "#7C5CFC").opacity(0.22), Color(hex: "#4DA3FF").opacity(0.16), Color(hex: "#00B8D9").opacity(0.14)], startPoint: .topLeading, endPoint: .bottomTrailing)
+            return LinearGradient(colors: [Color(hex: "#FF6A3D").opacity(0.22), Color(hex: "#FFB35C").opacity(0.18), Color(hex: "#6C63FF").opacity(0.10)], startPoint: .topLeading, endPoint: .bottomTrailing)
         case .relax:
             return LinearGradient(colors: [Color(hex: "#A2845E").opacity(0.22), Color(hex: "#D1BFA7").opacity(0.18), Color(hex: "#FF94C2").opacity(0.10)], startPoint: .topLeading, endPoint: .bottomTrailing)
         case .healing:
@@ -85,7 +85,7 @@ enum TripStyle: String, CaseIterable, Identifiable {
         case .forest: return "#B14A3A"
         case .nature: return "#34C759"
         case .ocean: return "#00B8D9"
-        case .drive: return "#7C5CFC"
+        case .drive: return "#FF6A3D"
         case .night: return "#6C63FF"
         case .relax: return "#A2845E"
         case .healing: return "#FF6FAE"
@@ -104,6 +104,7 @@ extension Trip {
             if hex.contains("B14A3A") { return .forest }
             if hex.contains("34C759") { return .nature }
             if hex.contains("7C5CFC") { return .drive }
+            if hex.contains("FF6A3D") { return .drive }
             if hex.contains("6C63FF") { return .night }
             if hex.contains("00B8D9") { return .ocean }
             if hex.contains("A2845E") { return .relax }
