@@ -39,6 +39,7 @@ struct CityPickerView: View {
         }
         .navigationTitle("cityPicker.title")
         .searchable(text: $query, isPresented: $isSearching, placement: .navigationBarDrawer(displayMode: .always), prompt: "cityPicker.search.prompt")
+        .tunedSearchInput()
         .searchInputStyle()
         .onSubmit(of: .search) {
             search()

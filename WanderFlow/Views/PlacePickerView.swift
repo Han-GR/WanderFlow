@@ -45,6 +45,7 @@ struct PlacePickerView: View {
         }
         .navigationTitle("placePicker.title")
         .searchable(text: $query, isPresented: $isSearching, placement: .navigationBarDrawer(displayMode: .always), prompt: "placePicker.search.prompt")
+        .tunedSearchInput()
         .searchInputStyle()
         .onSubmit(of: .search) {
             search()

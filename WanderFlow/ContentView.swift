@@ -260,6 +260,7 @@ private struct NewTripSheet: View {
             Form {
                 Section("home.newTrip.section.basic") {
                     TextField("home.newTrip.field.title", text: $title)
+                        .tunedTextInput()
                     DatePicker("home.newTrip.field.startDate", selection: $startDate, displayedComponents: .date)
                     DatePicker("home.newTrip.field.endDate", selection: $endDate, displayedComponents: .date)
                     Picker("home.newTrip.field.style", selection: $style) {

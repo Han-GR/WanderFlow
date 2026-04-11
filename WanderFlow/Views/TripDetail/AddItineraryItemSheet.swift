@@ -53,6 +53,7 @@ struct AddItineraryItemSheet: View {
             Form {
                 Section("addItinerary.section") {
                     TextField("addItinerary.field.title", text: $title)
+                        .tunedTextInput()
                         .focused($focusedField, equals: .title)
                     DatePicker("addItinerary.field.time", selection: $date, displayedComponents: [.date, .hourAndMinute])
                     Button {

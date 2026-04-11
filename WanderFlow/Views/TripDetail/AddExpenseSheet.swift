@@ -70,6 +70,7 @@ struct AddExpenseSheet: View {
                 Section("addExpense.section.expense") {
                     TextField("addExpense.field.amount", text: $amountText)
                         .keyboardType(.decimalPad)
+                        .tunedNumericInput()
                     Picker("addExpense.field.category", selection: $category) {
                         Text("expense.category.food").tag("餐饮")
                         Text("expense.category.stay").tag("住宿")
@@ -80,6 +81,7 @@ struct AddExpenseSheet: View {
                     }
                     .tint(trip.resolvedStyle.accent)
                     TextField("addExpense.field.note", text: $note)
+                        .tunedTextInput()
                     NavigationLink {
                         CurrencyPickerView(selectedCurrencyCode: $currency)
                     } label: {

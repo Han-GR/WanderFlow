@@ -43,6 +43,7 @@ struct CurrencyPickerView: View {
         }
         .navigationTitle("currencyPicker.title")
         .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "currencyPicker.search.prompt")
+        .tunedSearchInput()
         .searchInputStyle()
         .scrollDismissesKeyboard(.never)
         .onChange(of: searchText) { _, newValue in
