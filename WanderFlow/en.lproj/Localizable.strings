@@ -7,7 +7,7 @@
 
 "home.empty.title" = "Tap + to create your first trip";
 "home.empty.subtitle" = "Track itineraries and expenses with ease";
-"home.trips.section.year" = "%d";
+"home.trips.section.year" = "%@";
 "home.trip.untitled" = "Untitled Trip";
 "home.newTrip.title" = "New Trip";
 "home.newTrip.section.basic" = "Basics";

@@ -7,7 +7,7 @@
 
 "home.empty.title" = "点击 + 创建你的第一段旅程";
 "home.empty.subtitle" = "记录行程与花销，让出行更轻松";
-"home.trips.section.year" = "%d年";
+"home.trips.section.year" = "%@年";
 "home.trip.untitled" = "未命名旅行";
 "home.newTrip.title" = "新建旅行";
 "home.newTrip.section.basic" = "基本信息";

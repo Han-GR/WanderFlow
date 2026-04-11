@@ -77,7 +77,7 @@ struct TripsView: View {
                         ScrollView {
                             LazyVStack(alignment: .leading, spacing: 14, pinnedViews: []) {
                                 ForEach(yearSections) { section in
-                                    Text(verbatim: L10n.format("home.trips.section.year", section.year))
+                                    Text(verbatim: L10n.format("home.trips.section.year", L10n.integerNoGrouping(section.year)))
                                         .font(AppTypography.sectionTitle)
                                         .padding(.horizontal, 16)
                                         .padding(.top, 8)
@@ -109,7 +109,7 @@ struct TripsView: View {
                     } else {
                         List {
                             ForEach(yearSections) { section in
-                                Section(header: Text(verbatim: L10n.format("home.trips.section.year", section.year))) {
+                                Section(header: Text(verbatim: L10n.format("home.trips.section.year", L10n.integerNoGrouping(section.year)))) {
                                     ForEach(section.trips) { trip in
                                         NavigationLink(value: trip) {
                                             HStack(spacing: 12) {
