@@ -113,9 +113,9 @@ struct TripsView: View {
                                     ForEach(section.trips) { trip in
                                         NavigationLink(value: trip) {
                                             HStack(spacing: 12) {
-                                                Circle()
-                                                    .fill(trip.resolvedStyle.gradient)
-                                                    .frame(width: 12, height: 12)
+                                                Image(systemName: trip.resolvedStyle.systemImage)
+                                                    .font(.subheadline.weight(.semibold))
+                                                    .foregroundColor(trip.resolvedStyle.accent)
                                                 VStack(alignment: .leading, spacing: 6) {
                                                     Text(trip.title)
                                                         .font(AppTypography.sectionTitle)
@@ -129,7 +129,7 @@ struct TripsView: View {
                                                 Spacer()
                                             }
                                         }
-                                        .listCard(insets: EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+                                        .accentListCard(accent: trip.resolvedStyle.accent, insets: EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16), fillOpacity: 0.07, strokeOpacity: 0.10)
                                         .swipeActions(edge: .trailing) {
                                             Button(role: .destructive) {
                                                 tripToDelete = trip
@@ -208,22 +208,18 @@ private struct TripGridCard: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            HStack(alignment: .top) {
-                ZStack {
-                    Circle()
-                        .fill(trip.resolvedStyle.gradient)
-                        .frame(width: 34, height: 34)
-                    Image(systemName: trip.resolvedStyle.systemImage)
-                        .font(.caption.weight(.semibold))
-                        .foregroundColor(trip.resolvedStyle.accent)
-                }
+            HStack(alignment: .firstTextBaseline, spacing: 10) {
+                Text(trip.title)
+                    .font(AppTypography.sectionTitle)
+                    .lineLimit(2)
+                    .multilineTextAlignment(.leading)
+                
                 Spacer(minLength: 0)
+                
+                Image(systemName: trip.resolvedStyle.systemImage)
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundColor(trip.resolvedStyle.accent)
             }
-            
-            Text(trip.title)
-                .font(AppTypography.sectionTitle)
-                .lineLimit(2)
-                .multilineTextAlignment(.leading)
             
             HStack(spacing: 6) {
                 Image(systemName: "calendar")
@@ -231,10 +227,20 @@ private struct TripGridCard: View {
             }
             .font(AppTypography.caption)
             .foregroundColor(.secondary)
+            
+            Spacer(minLength: 0)
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .padding(14)
-        .background(CuteTheme.cardBackground())
+        .background(
+            RoundedRectangle(cornerRadius: CuteTheme.cardCornerRadius, style: .continuous)
+                .fill(trip.resolvedStyle.accent.opacity(0.09))
+                .overlay(
+                    RoundedRectangle(cornerRadius: CuteTheme.cardCornerRadius, style: .continuous)
+                        .strokeBorder(trip.resolvedStyle.accent.opacity(0.14), lineWidth: 1)
+                )
+        )
+        .aspectRatio(2, contentMode: .fit)
     }
 }
 

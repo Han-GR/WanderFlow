@@ -26,6 +26,7 @@ struct SettingsView: View {
                     Text("settings.homeLayout.list")
                         .tag(HomeLayout.list.rawValue)
                 }
+                .tint(.primary)
             }
         }
         .navigationTitle("settings.title")
