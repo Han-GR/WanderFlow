@@ -221,14 +221,14 @@ private struct TripGridCard: View {
                     .foregroundColor(trip.resolvedStyle.accent)
             }
             
+            Spacer(minLength: 0)
+            
             HStack(spacing: 6) {
                 Image(systemName: "calendar")
                 Text(date, format: .dateTime.month().day())
             }
             .font(AppTypography.caption)
             .foregroundColor(.secondary)
-            
-            Spacer(minLength: 0)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .padding(14)
