@@ -110,3 +110,8 @@
 
 "currencyPicker.title" = "选择货币";
 "currencyPicker.search.prompt" = "搜索货币";
+
+"settings.section.home" = "首页";
+"settings.homeLayout.title" = "首页布局";
+"settings.homeLayout.grid" = "网格";
+"settings.homeLayout.list" = "列表";

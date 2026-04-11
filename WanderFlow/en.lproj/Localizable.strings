@@ -22,6 +22,10 @@
 "settings.title" = "Settings";
 "settings.section.basic" = "General";
 "settings.defaultCurrency" = "Default Currency";
+"settings.section.home" = "Home";
+"settings.homeLayout.title" = "Home Layout";
+"settings.homeLayout.grid" = "Grid";
+"settings.homeLayout.list" = "List";
 
 "tripStyle.fresh" = "City";
 "tripStyle.warm" = "Food";

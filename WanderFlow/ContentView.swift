@@ -22,12 +22,9 @@ struct ContentView: View {
 struct TripsView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \Trip.createdAt, order: .reverse) private var trips: [Trip]
+    @AppStorage(AppSettings.homeLayoutKey) private var homeLayoutRaw: String = HomeLayout.grid.rawValue
     @State private var isPresentingNewTrip: Bool = false
     @State private var isShowingSettings: Bool = false
-    @State private var newTitle: String = ""
-    @State private var newStart: Date = .init()
-    @State private var newEnd: Date = .init()
-    @State private var newStyle: TripStyle = .fresh
     @State private var tripToDelete: Trip?
     
     private let calendar = Calendar.current
@@ -76,45 +73,80 @@ struct TripsView: View {
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else {
-                    List {
-                        ForEach(yearSections) { section in
-                            Section(header: Text(verbatim: L10n.format("home.trips.section.year", section.year))) {
-                                ForEach(section.trips) { trip in
-                                    NavigationLink(value: trip) {
-                                        HStack(spacing: 12) {
-                                            Circle()
-                                                .fill(trip.resolvedStyle.gradient)
-                                                .frame(width: 12, height: 12)
-                                            VStack(alignment: .leading, spacing: 6) {
-                                                Text(trip.title)
-                                                    .font(AppTypography.sectionTitle)
-                                                HStack(spacing: 6) {
-                                                    Image(systemName: "calendar")
-                                                    Text(sortDate(for: trip), format: .dateTime.month().day())
-                                                }
-                                                .foregroundColor(.secondary)
-                                                .font(AppTypography.caption)
+                    if homeLayout == .grid {
+                        ScrollView {
+                            LazyVStack(alignment: .leading, spacing: 14, pinnedViews: []) {
+                                ForEach(yearSections) { section in
+                                    Text(verbatim: L10n.format("home.trips.section.year", section.year))
+                                        .font(AppTypography.sectionTitle)
+                                        .padding(.horizontal, 16)
+                                        .padding(.top, 8)
+                                    
+                                    LazyVGrid(columns: gridColumns, alignment: .leading, spacing: 12) {
+                                        ForEach(section.trips) { trip in
+                                            NavigationLink(value: trip) {
+                                                TripGridCard(trip: trip, date: sortDate(for: trip))
                                             }
-                                            Spacer()
+                                            .buttonStyle(.plain)
+                                            .contextMenu {
+                                                Button(role: .destructive) {
+                                                    tripToDelete = trip
+                                                } label: {
+                                                    Label("common.delete", systemImage: "trash")
+                                                }
+                                            }
                                         }
                                     }
-                                    .listCard(insets: EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
-                                    .swipeActions(edge: .trailing) {
-                                        Button(role: .destructive) {
-                                            tripToDelete = trip
-                                        } label: {
-                                            Label("删除", systemImage: "trash")
+                                    .padding(.horizontal, 16)
+                                }
+                            }
+                            .padding(.bottom, 16)
+                        }
+                        .background(CuteTheme.background)
+                        .navigationDestination(for: Trip.self) { trip in
+                            TripDetailView(trip: trip)
+                        }
+                    } else {
+                        List {
+                            ForEach(yearSections) { section in
+                                Section(header: Text(verbatim: L10n.format("home.trips.section.year", section.year))) {
+                                    ForEach(section.trips) { trip in
+                                        NavigationLink(value: trip) {
+                                            HStack(spacing: 12) {
+                                                Circle()
+                                                    .fill(trip.resolvedStyle.gradient)
+                                                    .frame(width: 12, height: 12)
+                                                VStack(alignment: .leading, spacing: 6) {
+                                                    Text(trip.title)
+                                                        .font(AppTypography.sectionTitle)
+                                                    HStack(spacing: 6) {
+                                                        Image(systemName: "calendar")
+                                                        Text(sortDate(for: trip), format: .dateTime.month().day())
+                                                    }
+                                                    .foregroundColor(.secondary)
+                                                    .font(AppTypography.caption)
+                                                }
+                                                Spacer()
+                                            }
+                                        }
+                                        .listCard(insets: EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+                                        .swipeActions(edge: .trailing) {
+                                            Button(role: .destructive) {
+                                                tripToDelete = trip
+                                            } label: {
+                                                Label("common.delete", systemImage: "trash")
+                                            }
                                         }
                                     }
                                 }
                             }
                         }
-                    }
-                    .listStyle(.plain)
-                    .scrollContentBackground(.hidden)
-                    .background(CuteTheme.background)
-                    .navigationDestination(for: Trip.self) { trip in
-                        TripDetailView(trip: trip)
+                        .listStyle(.plain)
+                        .scrollContentBackground(.hidden)
+                        .background(CuteTheme.background)
+                        .navigationDestination(for: Trip.self) { trip in
+                            TripDetailView(trip: trip)
+                        }
                     }
                 }
             }
@@ -149,43 +181,105 @@ struct TripsView: View {
                 }
             }
             .sheet(isPresented: $isPresentingNewTrip) {
-                NavigationStack {
-                    Form {
-                        Section("home.newTrip.section.basic") {
-                            TextField("home.newTrip.field.title", text: $newTitle)
-                            DatePicker("home.newTrip.field.startDate", selection: $newStart, displayedComponents: .date)
-                            DatePicker("home.newTrip.field.endDate", selection: $newEnd, displayedComponents: .date)
-                            Picker("home.newTrip.field.style", selection: $newStyle) {
-                                ForEach(TripStyle.allCases) { style in
-                                    Label {
-                                        Text(style.title)
-                                            .lineLimit(1)
-                                            .truncationMode(.tail)
-                                    } icon: {
-                                        Image(systemName: style.systemImage)
-                                            .foregroundStyle(style.accent)
-                                    }
-                                    .tag(style)
-                                }
+                NewTripSheet { title, startDate, endDate, style in
+                    let trip = Trip(title: title, startDate: startDate, endDate: endDate, coverColorHex: style.legacyCoverHex, styleRaw: style.rawValue)
+                    modelContext.insert(trip)
+                    try? modelContext.save()
+                    isPresentingNewTrip = false
+                } onCancel: {
+                    isPresentingNewTrip = false
+                }
+            }
+        }
+    }
+    
+    private var homeLayout: HomeLayout {
+        HomeLayout(rawValue: homeLayoutRaw) ?? .grid
+    }
+    
+    private var gridColumns: [GridItem] {
+        [GridItem(.adaptive(minimum: 160), spacing: 12, alignment: .topLeading)]
+    }
+}
+
+private struct TripGridCard: View {
+    var trip: Trip
+    var date: Date
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(alignment: .top) {
+                ZStack {
+                    Circle()
+                        .fill(trip.resolvedStyle.gradient)
+                        .frame(width: 34, height: 34)
+                    Image(systemName: trip.resolvedStyle.systemImage)
+                        .font(.caption.weight(.semibold))
+                        .foregroundColor(trip.resolvedStyle.accent)
+                }
+                Spacer(minLength: 0)
+            }
+            
+            Text(trip.title)
+                .font(AppTypography.sectionTitle)
+                .lineLimit(2)
+                .multilineTextAlignment(.leading)
+            
+            HStack(spacing: 6) {
+                Image(systemName: "calendar")
+                Text(date, format: .dateTime.month().day())
+            }
+            .font(AppTypography.caption)
+            .foregroundColor(.secondary)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(14)
+        .background(CuteTheme.cardBackground())
+    }
+}
+
+private struct NewTripSheet: View {
+    @State private var title: String = ""
+    @State private var startDate: Date = .init()
+    @State private var endDate: Date = .init()
+    @State private var style: TripStyle = .fresh
+    
+    var onCreate: (String, Date, Date, TripStyle) -> Void
+    var onCancel: () -> Void
+    
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section("home.newTrip.section.basic") {
+                    TextField("home.newTrip.field.title", text: $title)
+                    DatePicker("home.newTrip.field.startDate", selection: $startDate, displayedComponents: .date)
+                    DatePicker("home.newTrip.field.endDate", selection: $endDate, displayedComponents: .date)
+                    Picker("home.newTrip.field.style", selection: $style) {
+                        ForEach(TripStyle.allCases) { style in
+                            Label {
+                                Text(style.title)
+                                    .lineLimit(1)
+                                    .truncationMode(.tail)
+                            } icon: {
+                                Image(systemName: style.systemImage)
+                                    .foregroundStyle(style.accent)
                             }
-                            .pickerStyle(.navigationLink)
-                            .tint(newStyle.accent)
+                            .tag(style)
                         }
                     }
-                    .navigationTitle("home.newTrip.title")
-                    .toolbar {
-                        ToolbarItem(placement: .cancellationAction) {
-                            Button("common.cancel") { isPresentingNewTrip = false }
-                        }
-                        ToolbarItem(placement: .confirmationAction) {
-                            Button("home.newTrip.action.create") {
-                                let trip = Trip(title: newTitle.isEmpty ? NSLocalizedString("home.trip.untitled", comment: "") : newTitle, startDate: newStart, endDate: newEnd, coverColorHex: newStyle.legacyCoverHex, styleRaw: newStyle.rawValue)
-                                modelContext.insert(trip)
-                                try? modelContext.save()
-                                newTitle = ""
-                                isPresentingNewTrip = false
-                            }
-                        }
+                    .pickerStyle(.navigationLink)
+                    .tint(style.accent)
+                }
+            }
+            .navigationTitle("home.newTrip.title")
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("common.cancel") { onCancel() }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("home.newTrip.action.create") {
+                        let name = title.isEmpty ? NSLocalizedString("home.trip.untitled", comment: "") : title
+                        onCreate(name, startDate, endDate, style)
                     }
                 }
             }

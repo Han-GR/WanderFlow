@@ -2,6 +2,7 @@ import Foundation
 
 enum AppSettings {
     static let defaultCurrencyCodeKey = "defaultCurrencyCode"
+    static let homeLayoutKey = "homeLayout"
     
     static func resolvedDefaultCurrencyCode(userDefaults: UserDefaults = .standard, locale: Locale = .current) -> String {
         if let stored = userDefaults.string(forKey: defaultCurrencyCodeKey), !stored.isEmpty {
