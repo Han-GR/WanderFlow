@@ -119,6 +119,8 @@ struct TripsView: View {
                                                 VStack(alignment: .leading, spacing: 6) {
                                                     Text(trip.title)
                                                         .font(AppTypography.sectionTitle)
+                                                        .lineLimit(1)
+                                                        .truncationMode(.tail)
                                                     HStack(spacing: 6) {
                                                         Image(systemName: "calendar")
                                                         Text(sortDate(for: trip), format: .dateTime.month().day())
