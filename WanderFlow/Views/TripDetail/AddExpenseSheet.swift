@@ -59,7 +59,8 @@ struct AddExpenseSheet: View {
                 _occurredAt = State(initialValue: dt)
                 _hasTime = State(initialValue: true)
             } else {
-                _hasTime = State(initialValue: false)
+                _occurredAt = State(initialValue: trip.startDate ?? Date())
+                _hasTime = State(initialValue: true)
             }
         }
     }
@@ -126,7 +127,7 @@ struct AddExpenseSheet: View {
                     Button("common.save") {
                         guard let amount = Double(amountText) else { return }
                         
-                        let occurred: Date? = hasTime ? occurredAt : nil
+                        let occurred: Date? = hasTime ? occurredAt : Calendar.current.startOfDay(for: occurredAt)
                         let stayStart: Date? = category == "住宿" ? Calendar.current.startOfDay(for: stayStartDate) : nil
                         let stayNights: Int? = category == "住宿" ? nights : nil
                         
